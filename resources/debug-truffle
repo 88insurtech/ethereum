@@ -1,0 +1,10 @@
+
+SimpleStorage.deployed().then(function(instance){return instance.get.call();}).then(function(value){return value.toNumber()});
+SimpleStorage.deployed().then(function(instance){return instance.set(4);});
+SimpleStorage.deployed().then(function(instance){return instance.get.call();}).then(function(value){return value.toNumber()});
+
+
+
+Seguro.deployed().then(function(instance){return instance.getStatus.call();}).then(function(value){return value.toNumber()});
+
+Seguro.deployed().then(function(instance){return instance.addSinistro(1,1);});
