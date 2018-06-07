@@ -1,2 +1,2 @@
-# ethereum
+# Ethereum
 Ethereum Smart Contracts Repository
