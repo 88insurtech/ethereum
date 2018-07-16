@@ -88,6 +88,16 @@ contract 88i {
             );
         }
     }
+
+    /**
+    * Do the share of apolice amount to:
+    * Channel 1.67%
+    * Dealer 8.33%
+    **/
+    function paymentShares()intern{
+        //channel.send();
+        //dealer.send();
+    }
     
     function setarPagamento() public payable {
         require(msg.sender == apolice.beneficiario);
