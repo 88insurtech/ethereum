@@ -18,13 +18,11 @@ contract 88SmartProtectionPolicy {
         uint256 valueOfProperty;
         uint16 premium;
         uint256 deductablePaymentValue;
+        uint16 duration = 1 years;
     }
 
     /** The address of the customer created by mobile aplication **/
     address customer;
-
-    /** The addres of the channel, who is provided the negociation channel **/
-    address broker;
 
     /** The address of the agent, the dealer **/
     address agent;
