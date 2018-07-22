@@ -91,6 +91,17 @@ contract SmartProtectionPolicy {
     constructor (address acustomeraddress, string acustomerName, uint256 apolicynumber, uint256 avalueOfProperty, uint256 apremium, uint256 afranchise, string ainsuredItem) public {
         owner = msg.sender;
 
+        require(apolicynumber != 0x0);
+        require(avalueOfProperty != 0x0);
+        require(apremium != 0x0);
+        require(afranchise != 0x0);
+        
+        bytes memory tempEmptyStringTest = bytes(ainsuredItem); // Uses memory
+        if (tempEmptyStringTest.length == 0) {
+            // emptyStringTest is an empty string
+            ainsuredItem = "The value of Insured Item is not provided";
+        }
+
         policy = Policy({
             startPolicyTime : now,
             policyNumber : apolicynumber,
