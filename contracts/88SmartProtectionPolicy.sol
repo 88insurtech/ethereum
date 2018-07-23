@@ -83,7 +83,7 @@ contract SmartProtectionPolicy {
 
     modifier onlyOwner() {
         if (msg.sender != owner) {
-            throw;
+            revert();
         }
         _;
     }
