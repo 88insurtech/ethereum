@@ -2,7 +2,6 @@ pragma solidity ^0.4.24;
 
 contract SmartProtectionPolicy {
 
-
     enum StatusPolicy { ACTIVE, FINISHED, INACTIVE, CONTAIN_CLAIM }
 
     StatusPolicy status;
@@ -26,9 +25,7 @@ contract SmartProtectionPolicy {
         uint256 contractDuration;
         
         uint256 policyBalanceValue;
-
     }
-
 
     /** The address of the agent, the dealer **/
     address public agent;
@@ -45,9 +42,9 @@ contract SmartProtectionPolicy {
     event CommissionPayed(address _address, uint256 eventValue);
 
     /**
-    * The Claim object, one contract can be zero or n claims
-    * ID is the unique identifier comes from internal system
-    **/
+     * The Claim object, one contract can be zero or n claims
+     * ID is the unique identifier comes from internal system
+     */
     struct Claim {
         uint id;
         uint internalId;
@@ -112,7 +109,15 @@ contract SmartProtectionPolicy {
         _;
     }
     
-    constructor (address acustomeraddress, string acustomerName, uint256 apolicynumber, uint256 avalueOfProperty, uint256 apremium, uint256 afranchise, string ainsuredItem) public {
+    constructor (
+        address acustomeraddress, 
+        string acustomerName, 
+        uint256 apolicynumber, 
+        uint256 avalueOfProperty, 
+        uint256 apremium, 
+        uint256 afranchise, 
+        string ainsuredItem) public {
+
         owner = msg.sender;
 
         require(apolicynumber != 0x0);
@@ -142,161 +147,172 @@ contract SmartProtectionPolicy {
         emit ChangeStatus(defaultStatus, apremium);
     }
     
-
     /**
      * 
-    **/
-    function setFeeComissionsPercent(uint16 broker, uint16 agent) onlyOwner() public returns (bool){
+     */
+    function setFeeComissionsPercent(uint16 _broker, uint16 _agent) onlyOwner() public returns (bool) {
         /**Avoid zero fee comission **/
-        notZero(broker);
-        notZero(agent);
+        notZero(_broker);
+        notZero(_agent);
         
         /** The percent (%) of fee to the Broker **/
-        commissionFeeBrokerPercent = broker;
+        commissionFeeBrokerPercent = _broker;
 
         /** The percent (%) of fee to the agent **/
-        commissionFeeAgentPercent = agent; 
+        commissionFeeAgentPercent = _agent; 
         
         /** The percent of fee **/
-        commissionFeePercent = broker + agent;
+        commissionFeePercent = _broker + _agent;
         
         return true;
     }
 
     /**
-    * This method change the percent of donation when the contract is expired
-    */
-    function changeDonationValue(uint8 percentOfDonation) public onlyOwner{
+     * This method change the percent of donation when the contract is expired
+     */
+    function changeDonationValue(uint8 percentOfDonation) public onlyOwner {
         donationsPercent = 2;
     }
 
     /**
-    * This method sends the amount to the donation destiny account
-    * First you need to call changeDonationValue, 
-    * you can call this method once
-    */
-    function sendDonationAmount(address donationsDestiny)public onlyOwner notDonatedYet{
+     * This method sends the amount to the donation destiny account
+     * First you need to call changeDonationValue, 
+     * you can call this method once
+     */
+    function sendDonationAmount(address donationsDestiny) public onlyOwner notDonatedYet {
         require(donationsDestiny == 0x0);
-
         require(this.balance == 0x0);
         
-        donationValue = this.balance * (donationsPercent / 100);
+        donationValue = this.balance * donationsPercent;
+        donationValue = donationValue / 100;
         donationsSocialDestiny.transfer(donationValue);
         donated = true;
     }
 
     /**
-    * Needs to be called after set Commissions Percent
-    * send a percent of Ether received to:
-    * Agent
-    * Broker
-    **/
-    function splitCommissionsWithExternalMoney() public onlyOwner payable returns(bool)  {
+     * Needs to be called after set Commissions Percent
+     * send a percent of Ether received to:
+     * Agent
+     * Broker
+     */
+    function splitCommissionsWithExternalMoney() public onlyOwner payable returns(bool) {
         return calculateCommissions(msg.value);
     }
 
     /**
-    * Only use thie method in phase 2
-    */
+     * Only use thie method in phase 2
+     */
     function splitCommissionsWithContractMoney() public onlyOwner payable returns(bool) {
         return calculateCommissions(this.balance);
     }
 
     /**
-    * This method calculates comissions, if we are using contract balance,  
-    */
-    function calculateCommissions(uint256 originFunds) internal onlyOwner returns (bool){
+     * This method calculates comissions, if we are using contract balance,  
+     */
+    function calculateCommissions(uint256 originFunds) internal onlyOwner returns (bool) {
         uint totalCommissionPayable = 0;
 
         /**
-        * requires called only if values are not calculated yet
-        **/
+         * requires called only if values are not calculated yet
+         */
         require((commissionFeeAgentValue == 0x0) && (commissionFeeBrokerValue == 0x0));
 
         /**
-        * Calculates and send a percent of ether to Agent
-        **/
-        if(commissionFeeAgentPercent != 0x0 ){
-            commissionFeeAgentValue = originFunds * (commissionFeeAgentPercent / 100);
+         * Calculates and send a percent of ether to Agent
+         */
+        if (commissionFeeAgentPercent != 0x0) {
+            commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
+            commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
         }
 
         /**
-        * Calculates and send a percent of ether to Broker
-        **/
-        if(commissionFeeBrokerPercent != 0x0 ){
-            commissionFeeBrokerValue = originFunds * (commissionFeeBrokerPercent / 100);
+         * Calculates and send a percent of ether to Broker
+         */
+        if (commissionFeeBrokerPercent != 0x0) {
+            commissionFeeBrokerValue = originFunds * commissionFeeBrokerPercent;
+            commissionFeeBrokerValue = commissionFeeBrokerValue / 100;
             totalCommissionPayable += commissionFeeBrokerValue;
         }
 
         /**
-        * Sets only one time, comission fee value per execution 
-        **/
+         * Sets only one time, comission fee value per execution 
+         */
         commissionFeeValue = totalCommissionPayable;
 
         return totalCommissionPayable > 0x0;
     }
 
     /**
-    * Needs to be called after comission split
-    *
-    */
-    function sendCommissionSplitedAgent() public onlyOwner returns (bool){
-        if(commissionFeeAgentValue != 0x0 ){
+     * Needs to be called after comission split
+     *
+     */
+    function sendCommissionSplitedAgent() public onlyOwner returns (bool) {
+        if (commissionFeeAgentValue != 0x0) {
             agent.transfer(commissionFeeAgentValue);
             agentPayed = true;
         }
+        
         return true;
     }
 
     /**
-    * Needs to be called after comission split
-    *
-    */
-    function sendCommissionSplitedBroker() public onlyOwner returns (bool){
-        if(commissionFeeBrokerValue != 0x0 ){
+     * Needs to be called after comission split
+     *
+     */
+    function sendComissionSplitedBroker() public onlyOwner returns (bool) {
+        if (commissionFeeBrokerValue != 0x0 ) {
             broker.transfer(commissionFeeBrokerValue);
             brokerPayed = true;
         }
+        
         return true;
     }
     
     /**
      * Creates a new claim
      * First Notice of Loss
-     **/
-    function FNOL(uint _internalId, uint _value) onlyOwner public returns (uint256){
+     */
+    function FNOL(uint _internalId, uint _value) onlyOwner public returns (uint256) {
         /**
-        * The claim value needs to be less than policy balance
-        **/
+         * The claim value needs to be less than policy balance
+         */
         require(policy.policyBalanceValue - _value >= 0x0);
         
         /**
-        * Add the claim to the claim list
-        *
-        **/
-        uint _id = claims.push(Claim({internalId: _internalId, id: _id, claimValue: _value, dateTime: now}));
+         * Add the claim to the claim list
+         *
+         */
+        uint _id = claims.push(Claim({
+            internalId: _internalId,
+            id: _id,
+            claimValue: _value,
+            dateTime: now,
+            idReceived: false,
+            videoReceived: false,
+            deductablePayed: false,
+            imeiBlocked: false,
+            policeNoticeReport: false
+        }));
 
         /**
-        * Set the new balance of policy
-        **/
+         * Set the new balance of policy
+         */
         policy.policyBalanceValue -= _value;
 
         /**
-        * Set policy status CONTAIN_CLAIN only if policy status is different
-        **/
-        if(status != StatusPolicy.CONTAIN_CLAIM){
+         * Set policy status CONTAIN_CLAIN only if policy status is different
+         */
+        if (status != StatusPolicy.CONTAIN_CLAIM) {
+
             status = StatusPolicy.CONTAIN_CLAIM;
-
             emit ChangeStatus(status, _value);
-
             log3(
                 "New Claim",
                 bytes32(msg.sender),
                 bytes32(_value),
                 bytes32(_id)
             );
-
         }
  
         return _id;
@@ -315,9 +331,15 @@ contract SmartProtectionPolicy {
     }
 
     /**
-    * This method
-    **/
-    function setClaimDocumentationWorkFlow(uint _internalId, bool _idReceived, bool _videoReceived, bool _deductablePayed, bool _imeiBlock, bool _policeNoticeReport) public onlyOwner {
+     * This method
+     */
+    function setClaimDocumentationWorkFlow(
+        uint _internalId, 
+        bool _idReceived, 
+        bool _videoReceived, 
+        bool _deductablePayed, 
+        bool _imeiBlock, 
+        bool _policeNoticeReport) public onlyOwner {
 
         require(_internalId != 0x0);
 
@@ -330,21 +352,21 @@ contract SmartProtectionPolicy {
                 claims[x].imeiBlocked = _imeiBlock;
                 claims[x].policeNoticeReport = _policeNoticeReport;
                 return;
-           }
+            }
             x++;
         }
     }
 
     /**
-    * Returns the claims quantity
-    **/
+     * Returns the claims quantity
+     */
     function claimsQuantity() public view returns (uint256) {
         return claims.length;
     }
     
     /**
-    * Returns the sum of the claims value
-    **/
+     * Returns the sum of the claims value
+     */
     function claimsValue() public view returns (uint256) {
         uint8 x = 0;
         uint256 totalValue = 0;
@@ -356,5 +378,4 @@ contract SmartProtectionPolicy {
 
         return totalValue;    
     } 
-
 }
