@@ -150,7 +150,7 @@ contract SmartProtectionPolicy {
     /**
      * 
      */
-    function setFeeComissionsPercent(uint16 _broker, uint16 _agent) onlyOwner() public returns (bool) {
+    function setFeeComissionsPercent(uint16 _broker, uint16 _agent) onlyOwner public returns (bool) {
         /**Avoid zero fee comission **/
         notZero(_broker);
         notZero(_agent);
@@ -260,8 +260,8 @@ contract SmartProtectionPolicy {
      * Needs to be called after comission split
      *
      */
-    function sendComissionSplitedBroker() public onlyOwner returns (bool) {
-        if (commissionFeeBrokerValue != 0x0 ) {
+    function sendCommissionSplitedBroker() public onlyOwner returns (bool) {
+        if (commissionFeeBrokerValue != 0x0) {
             broker.transfer(commissionFeeBrokerValue);
             brokerPayed = true;
         }
