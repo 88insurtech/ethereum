@@ -91,7 +91,7 @@ contract SmartProtectionPolicy {
     uint256 public donationValue;
     address public donationsSocialDestiny;
     
-    function notZero(uint _value) private {
+    function notZero(uint _value) private pure {
         require (_value != 0x0);
     }
 
