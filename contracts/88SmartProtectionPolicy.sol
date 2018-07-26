@@ -42,7 +42,7 @@ contract SmartProtectionPolicy {
     event ChangeStatus(StatusPolicy status, uint256 eventValue);
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
-    event ComissionPayed(address _address, uint256 eventValue);
+    event CommissionPayed(address _address, uint256 eventValue);
 
     /**
     * The Claim object, one contract can be zero or n claims
@@ -64,18 +64,18 @@ contract SmartProtectionPolicy {
     Claim[] public claims;
 
     /** The percent of fee **/
-    uint256 comissionFeePercent = 2;
-    uint256 comissionFeeValue;
+    uint256 commissionFeePercent = 2;
+    uint256 commissionFeeValue;
 
     /** The percent (%) of fee to the Broker **/
-    uint256 comissionFeeBrokerPercent = 1;
+    uint256 commissionFeeBrokerPercent = 1;
 
     /** The percent (%) of fee to the agent **/
-    uint256 comissionFeeAgentPercent = 1;
+    uint256 commissionFeeAgentPercent = 1;
 
-    /** The comission values for stakeholders **/
-    uint256 comissionFeeBrokerValue;/** The value of fee in Ether to be sended to Broker **/
-    uint256 comissionFeeAgentValue;/** The value of fee in Ether to be sended to Agent **/
+    /** The commission values for stakeholders **/
+    uint256 commissionFeeBrokerValue;/** The value of fee in Ether to be sended to Broker **/
+    uint256 commissionFeeAgentValue;/** The value of fee in Ether to be sended to Agent **/
 
      /** The percent (%) donations **/
      /**
@@ -152,13 +152,13 @@ contract SmartProtectionPolicy {
         notZero(agent);
         
         /** The percent (%) of fee to the Broker **/
-        comissionFeeBrokerPercent = broker;
+        commissionFeeBrokerPercent = broker;
 
         /** The percent (%) of fee to the agent **/
-        comissionFeeAgentPercent = agent; 
+        commissionFeeAgentPercent = agent; 
         
         /** The percent of fee **/
-        comissionFeePercent = broker + agent;
+        commissionFeePercent = broker + agent;
         
         return true;
     }
@@ -186,48 +186,64 @@ contract SmartProtectionPolicy {
     }
 
     /**
-    * Needs to be called after set Comissions Percent
+    * Needs to be called after set Commissions Percent
     * send a percent of Ether received to:
     * Agent
     * Broker
     **/
-    function splitComissions() public onlyOwner payable returns(bool) {
-        uint totalComissionPayable = 0;
+    function splitCommissionsWithExternalMoney() public onlyOwner payable returns(bool)  {
+        return calculateCommissions(msg.value);
+    }
+
+    /**
+    * Only use thie method in phase 2
+    */
+    function splitCommissionsWithContractMoney() public onlyOwner payable returns(bool) {
+        return calculateCommissions(this.balance);
+    }
+
+    /**
+    * This method calculates comissions, if we are using contract balance,  
+    */
+    function calculateCommissions(uint256 originFunds) internal onlyOwner returns (bool){
+        uint totalCommissionPayable = 0;
 
         /**
         * requires called only if values are not calculated yet
         **/
-        require((comissionFeeAgentValue == 0x0) && (comissionFeeBrokerValue == 0x0));
+        require((commissionFeeAgentValue == 0x0) && (commissionFeeBrokerValue == 0x0));
 
         /**
         * Calculates and send a percent of ether to Agent
         **/
-        if(comissionFeeAgentPercent != 0x0 ){
-            comissionFeeAgentValue = msg.value * (comissionFeeAgentPercent / 100);
-            totalComissionPayable += comissionFeeAgentValue;
+        if(commissionFeeAgentPercent != 0x0 ){
+            commissionFeeAgentValue = originFunds * (commissionFeeAgentPercent / 100);
+            totalCommissionPayable += commissionFeeAgentValue;
         }
 
         /**
         * Calculates and send a percent of ether to Broker
         **/
-        if(comissionFeeBrokerPercent != 0x0 ){
-            comissionFeeBrokerValue = msg.value * (comissionFeeBrokerPercent / 100);
-            totalComissionPayable += comissionFeeBrokerValue;
+        if(commissionFeeBrokerPercent != 0x0 ){
+            commissionFeeBrokerValue = originFunds * (commissionFeeBrokerPercent / 100);
+            totalCommissionPayable += commissionFeeBrokerValue;
         }
 
         /**
         * Sets only one time, comission fee value per execution 
         **/
-        comissionFeeValue = totalComissionPayable; 
+        commissionFeeValue = totalCommissionPayable;
+
+        return totalCommissionPayable > 0x0;
     }
 
     /**
     * Needs to be called after comission split
     *
     */
-    function sendComissionSplitedAgent() public onlyOwner returns (bool){
-        if(comissionFeeAgentValue != 0x0 ){
-            agent.transfer(comissionFeeAgentValue);
+    function sendCommissionSplitedAgent() public onlyOwner returns (bool){
+        if(commissionFeeAgentValue != 0x0 ){
+            agent.transfer(commissionFeeAgentValue);
             agentPayed = true;
         }
         return true;
@@ -237,9 +253,9 @@ contract SmartProtectionPolicy {
     * Needs to be called after comission split
     *
     */
-    function sendComissionSplitedBroker() public onlyOwner returns (bool){
-        if(comissionFeeBrokerValue != 0x0 ){
-            broker.transfer(comissionFeeBrokerValue);
+    function sendCommissionSplitedBroker() public onlyOwner returns (bool){
+        if(commissionFeeBrokerValue != 0x0 ){
+            broker.transfer(commissionFeeBrokerValue);
             brokerPayed = true;
         }
         return true;
@@ -340,9 +356,5 @@ contract SmartProtectionPolicy {
 
         return totalValue;    
     } 
-
-
-
-
 
 }
