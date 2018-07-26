@@ -149,8 +149,8 @@ contract SmartProtectionPolicy {
     /**
      * 
      */
-    function setFeeComissionsPercent(uint8 _broker, uint8 _agent) onlyOwner public returns (bool) {
-        /**Avoid zero fee comission **/
+    function setFeeCommissionsPercent(uint8 _broker, uint8 _agent) onlyOwner public returns (bool) {
+        /**Avoid zero fee commission **/
         notZero(_broker);
         notZero(_agent);
         
@@ -208,7 +208,7 @@ contract SmartProtectionPolicy {
     }
 
     /**
-     * This method calculates comissions, if we are using contract balance,  
+     * This method calculates commissions, if we are using contract balance,  
      */
     function calculateCommissions(uint256 originFunds) internal onlyOwner returns (bool) {
         uint totalCommissionPayable = 0;
@@ -241,7 +241,7 @@ contract SmartProtectionPolicy {
         }
 
         /**
-         * Sets only one time, comission fee value per execution 
+         * Sets only one time, commission fee value per execution 
          */
         commissionFeeValue = totalCommissionPayable;
 
@@ -249,7 +249,7 @@ contract SmartProtectionPolicy {
     }
 
     /**
-     * Needs to be called after comission split
+     * Needs to be called after commission split
      *
      */
     function sendCommissionSplitedAgent() public onlyOwner returns (bool) {
@@ -262,7 +262,7 @@ contract SmartProtectionPolicy {
     }
 
     /**
-     * Needs to be called after comission split
+     * Needs to be called after commission split
      *
      */
     function sendCommissionSplitedBroker() public onlyOwner returns (bool) {
