@@ -62,7 +62,7 @@ contract SmartProtectionPolicy {
 
     /** The percent of fee **/
     uint256 commissionFeePercent = 2;
-    uint256 commissionFeeValue;
+    uint256 commissionFeeValue = 0x0;
 
     /** The percent (%) of fee to the Broker **/
     uint256 commissionFeeBrokerPercent = 1;
@@ -71,11 +71,10 @@ contract SmartProtectionPolicy {
     uint256 commissionFeeAgentPercent = 1;
 
     /** The commission values for stakeholders **/
-    uint256 commissionFeeBrokerValue;/** The value of fee in Ether to be sended to Broker **/
-    uint256 commissionFeeAgentValue;/** The value of fee in Ether to be sended to Agent **/
+    uint256 commissionFeeBrokerValue = 0x0; /** The value of fee in Ether to be sended to Broker **/
+    uint256 commissionFeeAgentValue = 0x0; /** The value of fee in Ether to be sended to Agent **/
 
-     /** The percent (%) donations **/
-     /**
+    /**
      *
      * Some of the contract amount have to be donation
      * The default percent value is 2%
@@ -85,7 +84,7 @@ contract SmartProtectionPolicy {
      * That method (sendDonationAmount) will send to a address the correspondent value in Ethers
      *
      *
-     **/
+     */
     uint256 public donationsPercent = 2;
     bool    public donated = false;
     uint256 public donationValue;

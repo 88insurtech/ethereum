@@ -138,7 +138,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             let expectedAccountBalance = agentInitialBalance.toNumber() + comission;
             let currentAgentBalance = await web3.eth.getBalance(secondAccount);
             
-            assert.equal(expectedAccountBalance, currentAgentBalance.toNumber());
+            assert.equal(currentAgentBalance.toNumber(), expectedAccountBalance);
             assert.isTrue(await globalContract.agentPayed());
 
         } catch (error) {
@@ -162,7 +162,7 @@ contract('SmartProtectionPolicy', function(accounts) {
 
             let comission = amount * (brokerComissionPercent/100);
             let expectedAccountBalance = brokerInitialBalance.toNumber() + comission;
-            let currentBrokerBalance = await web3.eth.getBalance(secondAccount);
+            let currentBrokerBalance = await web3.eth.getBalance(thirdAccount);
             
             assert.equal(expectedAccountBalance, currentBrokerBalance.toNumber());
             assert.isTrue(await globalContract.brokerPayed());
