@@ -56,74 +56,102 @@ contract('SmartProtectionPolicy', function(accounts) {
         }
     });
 
-    // It tests the function calls only, not the result. It's strongly recommended tests the results
-    // To do it, it's necessary to have comissionFeePercent attribute public or has a Get method
-    it("should not accept _broker OR _agent be 0 calling setFeeComissionsPercent", async () => {
-        // both invalid
+    it("should not accept 1 (Agent) invalid param calling setFeeComissionsPercent", async () => {
+        // Test invalid Agent
+        try {
+            await globalContract.setFeeComissionsPercent(8, 0);
+            assert.isOk(false);
+        } catch (error) {
+            assert.isOk(/revert/.test(error.message));
+            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getComissionFeePercent(), 2);
+        }
+    });
+
+    it("should not accept 1 (Broker) invalid param calling setFeeComissionsPercent", async () => {
+        // Test invalid broker
+        try {
+            await globalContract.setFeeComissionsPercent(0, 8);
+            assert.isOk(false);
+        } catch (error) {
+            assert.isOk(/revert/.test(error.message));
+            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getComissionFeePercent(), 2);
+        }
+    });
+
+    it("should not accept 2 invalid params calling setFeeComissionsPercent", async () => {
         try {
             await globalContract.setFeeComissionsPercent(0, 0);
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-        }
-        // one (_blocker) valid
-        try {
-            await globalContract.setFeeComissionsPercent(8, 0);
-            assert.isOk(false);
-        } catch (error) {
-            assert.isOk(/revert/.test(error.message));
-        }
-        // one (_agent) valid
-        try {
-            await globalContract.setFeeComissionsPercent(8, 0);
-            assert.isOk(false);
-        } catch (error) {
-            assert.isOk(/revert/.test(error.message));
+            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getComissionFeePercent(), 2);
         }
     });
 
-    // It tests the function calls only, not the result. It's strongly recommended tests the results
-    // To do it, it's necessary to have comissionFeePercent attribute public or has a Get method
     it("should works fine passing 2 valid params calling setFeeComissionsPercent", async () => {
-        try {
-            let result = await globalContract.setFeeComissionsPercent(8, 8);
-            assert.isTrue(/0x[0-9A-Fa-f]{64}/.test(result.tx));
-        } catch (error) {
-            assert.isOk(false);
-        }
+        let agentPercent = 7;
+        let brokerPercent = 8;
+
+        // Check initial status
+        assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
+        assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
+        assert.equal(await globalContract.getComissionFeePercent(), 2);
+
+        await globalContract.setFeeComissionsPercent(brokerPercent, agentPercent);
+        
+        assert.equal(await globalContract.getComissionFeeAgentPercent(), agentPercent);
+        assert.equal(await globalContract.getComissionFeeBrokerPercent(), brokerPercent);
+        assert.equal(await globalContract.getComissionFeePercent(), (brokerPercent + agentPercent));
     });
 
-    // It tests the function calls only, not the result. It's strongly recommended tests the results
-    // To do it, it's necessary to have comissionFeeValue, comissionFeeAgentValue and 
-    // comissionFeeBrokerValue attribute public or has a Get method
-    it("should call splitComissions method with no erros", async () => {
-        try {
-            await globalContract.setFeeComissionsPercent(8, 8);
-            await globalContract.splitComissions({value: web3.toWei(1, "ether")});
-            assert.isOk(true);
-        } catch (error) {
-            assert.isOk(false);
-        }
+    it("should call splitComissions method with no expected erros", async () => {
+        let agentPercent = 7;
+        let brokerPercent = 8; 
+        let amount = web3.toWei(1, "shannon"); // 1gwei // 1000000000
+        
+        let expectedAgentFeeValue = amount * (agentPercent / 100);
+        let expectedBrokerFeeValue = amount * (brokerPercent / 100);
+        let expectedFeeValue = (expectedAgentFeeValue + expectedBrokerFeeValue);
+
+        await globalContract.setFeeComissionsPercent(brokerPercent, agentPercent);
+        await globalContract.splitComissions({value: amount});
+
+        let agentFeeValue = await globalContract.getComissionFeeAgentValue();
+        let brokerFeeValue = await globalContract.getComissionFeeBrokerValue();
+        let feeValue = await globalContract.getComissionFeeValue();
+
+        assert.equal(agentFeeValue.toNumber(), expectedAgentFeeValue);
+        assert.equal(brokerFeeValue.toNumber(), expectedBrokerFeeValue);
+        assert.equal(feeValue.toNumber(), expectedFeeValue);
     });
 
-    // It tests the function calls only, not the result. It's strongly recommended tests the results
-    // To do it, it's necessary to have comissionFeeValue, comissionFeeAgentValue and 
-    // comissionFeeBrokerValue attribute public or has a Get method
     it("should not accept calls on splitComissions by another account", async () => {
         try {
             await globalContract.setFeeComissionsPercent(8, 8);
-            await globalContract.splitComissions({from: secondAccount, value: web3.toWei(1, "ether")});
             // must throw error
+            await globalContract.splitComissions({
+                from: secondAccount,
+                value: web3.toWei(1, "ether")
+            });
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
+            assert.equal(await globalContract.getComissionFeeAgentValue(), 0);
+            assert.equal(await globalContract.getComissionFeeBrokerValue(), 0);
+            assert.equal(await globalContract.getComissionFeeValue(), 0);
         }
     });
 
-    it("should send fee to Agent calling sendComissionSplitedAgent", async () => {
+    it("should send fee to Agent calling sendComissionSplitedAgent with Fee", async () => {
         try {
-            let agentComissionPercent = 8; //8%
-            let amount = web3.toWei(1, "ether");
+            let agentComissionPercent = 100; //8%
+            let amount = web3.toWei(2, "shannon");
 
             globalContract.agent = secondAccount;
             assert.isFalse(await globalContract.agentPayed());
@@ -133,23 +161,28 @@ contract('SmartProtectionPolicy', function(accounts) {
             await globalContract.setFeeComissionsPercent(3, agentComissionPercent);
             await globalContract.splitComissions({value: amount});
             await globalContract.sendComissionSplitedAgent();
-            
+
             let comission = amount * (agentComissionPercent/100);
             let expectedAccountBalance = agentInitialBalance.toNumber() + comission;
             let currentAgentBalance = await web3.eth.getBalance(secondAccount);
             
-            assert.equal(currentAgentBalance.toNumber(), expectedAccountBalance);
+            assert.equal(
+                currentAgentBalance.toNumber(),
+                expectedAccountBalance,
+                "The transfer may been failed."
+            );
             assert.isTrue(await globalContract.agentPayed());
 
         } catch (error) {
+            console.log(error.message);
             assert.isOk(false);
         }
     });
 
     it("should send fee to the broker calling sendComissionSplitedBroker", async () => {
         try {
-            let brokerComissionPercent = 8; //8%
-            let amount = web3.toWei(1, "ether");
+            let brokerComissionPercent = 100; //8%
+            let amount = web3.toWei(3, "shannon");
 
             globalContract.broker = thirdAccount;
             assert.isFalse(await globalContract.brokerPayed());
@@ -164,7 +197,11 @@ contract('SmartProtectionPolicy', function(accounts) {
             let expectedAccountBalance = brokerInitialBalance.toNumber() + comission;
             let currentBrokerBalance = await web3.eth.getBalance(thirdAccount);
             
-            assert.equal(expectedAccountBalance, currentBrokerBalance.toNumber());
+            assert.equal(
+                expectedAccountBalance,
+                currentBrokerBalance.toNumber(),
+                "The transfer may been failed."
+            );
             assert.isTrue(await globalContract.brokerPayed());
 
         } catch (error) {

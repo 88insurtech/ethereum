@@ -90,7 +90,7 @@ contract SmartProtectionPolicy {
     uint256 public donationValue;
     address public donationsSocialDestiny;
     
-    function notZero(uint _value) private pure {
+    function notZero(uint8 _value) private pure {
         require (_value != 0x0);
     }
 
@@ -149,7 +149,7 @@ contract SmartProtectionPolicy {
     /**
      * 
      */
-    function setFeeComissionsPercent(uint16 _broker, uint16 _agent) onlyOwner public returns (bool) {
+    function setFeeComissionsPercent(uint8 _broker, uint8 _agent) onlyOwner public returns (bool) {
         /**Avoid zero fee comission **/
         notZero(_broker);
         notZero(_agent);
@@ -182,6 +182,8 @@ contract SmartProtectionPolicy {
         require(donationsDestiny == 0x0);
         require(this.balance == 0x0);
         
+        // My God give me OpenZeppelin math please
+        // (commissionFeeAgentPercent / 100) returns 0
         donationValue = this.balance * donationsPercent;
         donationValue = donationValue / 100;
         donationsSocialDestiny.transfer(donationValue);
@@ -219,8 +221,10 @@ contract SmartProtectionPolicy {
         /**
          * Calculates and send a percent of ether to Agent
          */
-        if (commissionFeeAgentPercent != 0x0) {
-            commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
+        if (commissionFeeAgentPercent != 0x0 ) {
+            // My God give me OpenZeppelin math please
+            // (commissionFeeAgentPercent / 100) returns 0
+            commissionFeeAgentValue = msg.value * commissionFeeAgentPercent;
             commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
         }
@@ -228,8 +232,10 @@ contract SmartProtectionPolicy {
         /**
          * Calculates and send a percent of ether to Broker
          */
-        if (commissionFeeBrokerPercent != 0x0) {
-            commissionFeeBrokerValue = originFunds * commissionFeeBrokerPercent;
+        if (commissionFeeBrokerPercent != 0x0 ) {
+            // My God give me OpenZeppelin math please
+            // (commissionFeeBrokerPercent / 100) returns 0
+            commissionFeeBrokerValue = msg.value * commissionFeeBrokerPercent;
             commissionFeeBrokerValue = commissionFeeBrokerValue / 100;
             totalCommissionPayable += commissionFeeBrokerValue;
         }
@@ -377,4 +383,28 @@ contract SmartProtectionPolicy {
 
         return totalValue;    
     } 
+    
+    function getCommissionFeePercent() public view onlyOwner returns (uint256) {
+        return commissionFeePercent;
+    }
+
+    function getCommissionFeeAgentPercent() public view onlyOwner returns (uint256) {
+        return commissionFeeAgentPercent;
+    }
+
+    function getCommissionFeeBrokerPercent() public view onlyOwner returns (uint256) {
+        return commissionFeeBrokerPercent;
+    }
+
+    function getCommissionFeeValue() public view onlyOwner returns (uint256) {
+        return commissionFeeValue;
+    }
+
+    function getCommissionFeeAgentValue() public view onlyOwner returns (uint256) {
+        return commissionFeeAgentValue;
+    }
+
+    function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
+        return commissionFeeBrokerValue;
+    }
 }
