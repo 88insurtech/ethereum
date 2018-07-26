@@ -76,6 +76,23 @@ contract SmartProtectionPolicy {
     /** The comission values for stakeholders **/
     uint256 comissionFeeBrokerValue;/** The value of fee in Ether to be sended to Broker **/
     uint256 comissionFeeAgentValue;/** The value of fee in Ether to be sended to Agent **/
+
+     /** The percent (%) donations **/
+     /**
+     *
+     * Some of the contract amount have to be donation
+     * The default percent value is 2%
+     * The owner can modify it calling changeDonationValue method
+     *
+     * When the contract is expired, the owner can call sendDonationAmount method
+     * That method (sendDonationAmount) will send to a address the correspondent value in Ethers
+     *
+     *
+     **/
+    uint256 public donationsPercent = 2;
+    bool    public donated = false;
+    uint256 public donationValue;
+    address public donationsSocialDestiny;
     
     function notZero(uint _value) private {
         require (_value != 0x0);
@@ -83,6 +100,13 @@ contract SmartProtectionPolicy {
 
     modifier onlyOwner() {
         if (msg.sender != owner) {
+            revert();
+        }
+        _;
+    }
+
+    modifier notDonatedYet() {
+        if (donated) {
             revert();
         }
         _;
@@ -137,6 +161,28 @@ contract SmartProtectionPolicy {
         comissionFeePercent = broker + agent;
         
         return true;
+    }
+
+    /**
+    * This method change the percent of donation when the contract is expired
+    */
+    function changeDonationValue(uint8 percentOfDonation) public onlyOwner{
+        donationsPercent = 2;
+    }
+
+    /**
+    * This method sends the amount to the donation destiny account
+    * First you need to call changeDonationValue, 
+    * you can call this method once
+    */
+    function sendDonationAmount(address donationsDestiny)public onlyOwner notDonatedYet{
+        require(donationsDestiny == 0x0);
+
+        require(this.balance == 0x0);
+        
+        donationValue = this.balance * (donationsPercent / 100);
+        donationsSocialDestiny.transfer(donationValue);
+        donated = true;
     }
 
     /**
