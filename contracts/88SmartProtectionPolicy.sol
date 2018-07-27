@@ -318,7 +318,6 @@ contract SmartProtectionPolicy {
     * This method
     **/
     function setClaimDocumentationWorkFlow(uint _internalId, bool _idReceived, bool _videoReceived, bool _deductablePayed, bool _imeiBlock, bool _policeNoticeReport) public onlyOwner {
-
         require(_internalId != 0x0);
 
         uint8 x = 0;
