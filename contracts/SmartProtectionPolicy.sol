@@ -1,7 +1,5 @@
 pragma solidity ^0.4.24;
 
-
-
 // v0.1.0
 // Author(s): Alex Braz Alex Silva Daniel Miranda
 
@@ -95,7 +93,7 @@ contract SmartProtectionPolicy {
      * The owner can modify it calling changeDonationValue method
      *
      * When the contract is expired, the owner can call sendDonationAmount method
-     * That method (sendDonationAmount) will send to a address the correspondent value in Ethers
+     * That method (sendDonationAmount) will send to an address the correspondent value in Ethers
      *
      *
      */
@@ -234,8 +232,6 @@ contract SmartProtectionPolicy {
          * Calculates and send a percent of ether to Agent
          */
         if (commissionFeeAgentPercent != 0x0 ) {
-            // My God give me OpenZeppelin math please
-            // (commissionFeeAgentPercent / 100) returns 0
             commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
             commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
