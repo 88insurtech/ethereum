@@ -104,10 +104,6 @@ contract SmartProtectionPolicy {
     uint256 public donationValue;
     address public donationsSocialDestiny;
     
-    function notZero(uint8 _value) private pure {
-        require (_value != 0x0);
-    }
-
     modifier onlyOwner() {
         if (msg.sender != owner) {
             revert();
@@ -158,6 +154,10 @@ contract SmartProtectionPolicy {
         });
 
         emit ChangeStatus(defaultStatus, apremium);
+    }
+
+    function notZero(uint8 _value) private pure {
+        require (_value != 0x0);
     }
     
     /**

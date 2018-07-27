@@ -56,61 +56,68 @@ contract('SmartProtectionPolicy', function(accounts) {
         }
     });
 
-    it("should not accept 1 (Agent) invalid param calling setFeeComissionsPercent", async () => {
+    it("should not accept 1 (Agent) invalid param calling setFeeCommissionsPercent", async () => {
         // Test invalid Agent
         try {
-            await globalContract.setFeeComissionsPercent(8, 0);
+            await globalContract.setFeeCommissionsPercent(8, 0);
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
-            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
-            assert.equal(await globalContract.getComissionFeePercent(), 2);
+            assert.equal(await globalContract.getCommissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeePercent(), 2);
         }
     });
 
-    it("should not accept 1 (Broker) invalid param calling setFeeComissionsPercent", async () => {
+    it("should not accept 1 (Broker) invalid param calling setFeeCommissionsPercent", async () => {
         // Test invalid broker
         try {
-            await globalContract.setFeeComissionsPercent(0, 8);
+            await globalContract.setFeeCommissionsPercent(0, 8);
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
-            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
-            assert.equal(await globalContract.getComissionFeePercent(), 2);
+            assert.equal(await globalContract.getCommissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeePercent(), 2);
         }
     });
 
-    it("should not accept 2 invalid params calling setFeeComissionsPercent", async () => {
+    it("should not accept 2 invalid params calling setFeeCommissionsPercent", async () => {
         try {
-            await globalContract.setFeeComissionsPercent(0, 0);
+            await globalContract.setFeeCommissionsPercent(0, 0);
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-            assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
-            assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
-            assert.equal(await globalContract.getComissionFeePercent(), 2);
+            assert.equal(await globalContract.getCommissionFeeAgentPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeeBrokerPercent(), 1);
+            assert.equal(await globalContract.getCommissionFeePercent(), 2);
         }
     });
 
-    it("should works fine passing 2 valid params calling setFeeComissionsPercent", async () => {
+    it("should works fine passing 2 valid params calling setFeeCommissionsPercent", async () => {
         let agentPercent = 7;
         let brokerPercent = 8;
 
         // Check initial status
-        assert.equal(await globalContract.getComissionFeeAgentPercent(), 1);
-        assert.equal(await globalContract.getComissionFeeBrokerPercent(), 1);
-        assert.equal(await globalContract.getComissionFeePercent(), 2);
+        assert.equal(await globalContract.getCommissionFeeAgentPercent(), 1);
+        assert.equal(await globalContract.getCommissionFeeBrokerPercent(), 1);
+        assert.equal(await globalContract.getCommissionFeePercent(), 2);
 
-        await globalContract.setFeeComissionsPercent(brokerPercent, agentPercent);
+        await globalContract.setFeeCommissionsPercent(brokerPercent, agentPercent);
         
-        assert.equal(await globalContract.getComissionFeeAgentPercent(), agentPercent);
-        assert.equal(await globalContract.getComissionFeeBrokerPercent(), brokerPercent);
-        assert.equal(await globalContract.getComissionFeePercent(), (brokerPercent + agentPercent));
+        assert.equal(await globalContract.getCommissionFeeAgentPercent(), agentPercent);
+        assert.equal(await globalContract.getCommissionFeeBrokerPercent(), brokerPercent);
+        assert.equal(await globalContract.getCommissionFeePercent(), (brokerPercent + agentPercent));
     });
 
-    it("should call splitComissions method with no expected erros", async () => {
+    it("should change donationsPercent calling changeDonationValue", async () => {
+        let value = 7;
+        assert.equal(await globalContract.donationsPercent(), 2);
+        await globalContract.changeDonationValue(value);
+        assert.equal(await globalContract.donationsPercent(), 7);
+    });
+
+    /*it("should call splitCommissions method with no expected erros", async () => {
         let agentPercent = 7;
         let brokerPercent = 8; 
         let amount = web3.toWei(1, "shannon"); // 1gwei // 1000000000
@@ -119,38 +126,38 @@ contract('SmartProtectionPolicy', function(accounts) {
         let expectedBrokerFeeValue = amount * (brokerPercent / 100);
         let expectedFeeValue = (expectedAgentFeeValue + expectedBrokerFeeValue);
 
-        await globalContract.setFeeComissionsPercent(brokerPercent, agentPercent);
-        await globalContract.splitComissions({value: amount});
+        await globalContract.setFeeCommissionsPercent(brokerPercent, agentPercent);
+        await globalContract.splitCommissions({value: amount});
 
-        let agentFeeValue = await globalContract.getComissionFeeAgentValue();
-        let brokerFeeValue = await globalContract.getComissionFeeBrokerValue();
-        let feeValue = await globalContract.getComissionFeeValue();
+        let agentFeeValue = await globalContract.getCommissionFeeAgentValue();
+        let brokerFeeValue = await globalContract.getCommissionFeeBrokerValue();
+        let feeValue = await globalContract.getCommissionFeeValue();
 
         assert.equal(agentFeeValue.toNumber(), expectedAgentFeeValue);
         assert.equal(brokerFeeValue.toNumber(), expectedBrokerFeeValue);
         assert.equal(feeValue.toNumber(), expectedFeeValue);
     });
 
-    it("should not accept calls on splitComissions by another account", async () => {
+    it("should not accept calls on splitCommissions by another account", async () => {
         try {
-            await globalContract.setFeeComissionsPercent(8, 8);
+            await globalContract.setFeeCommissionsPercent(8, 8);
             // must throw error
-            await globalContract.splitComissions({
+            await globalContract.splitCommissions({
                 from: secondAccount,
                 value: web3.toWei(1, "ether")
             });
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-            assert.equal(await globalContract.getComissionFeeAgentValue(), 0);
-            assert.equal(await globalContract.getComissionFeeBrokerValue(), 0);
-            assert.equal(await globalContract.getComissionFeeValue(), 0);
+            assert.equal(await globalContract.getCommissionFeeAgentValue(), 0);
+            assert.equal(await globalContract.getCommissionFeeBrokerValue(), 0);
+            assert.equal(await globalContract.getCommissionFeeValue(), 0);
         }
     });
 
-    it("should send fee to Agent calling sendComissionSplitedAgent with Fee", async () => {
+    it("should send fee to Agent calling sendCommissionSplitedAgent with Fee", async () => {
         try {
-            let agentComissionPercent = 100; //8%
+            let agentCommissionPercent = 100; //8%
             let amount = web3.toWei(2, "shannon");
 
             globalContract.agent = secondAccount;
@@ -158,12 +165,13 @@ contract('SmartProtectionPolicy', function(accounts) {
 
             let agentInitialBalance = await web3.eth.getBalance(secondAccount);
             
-            await globalContract.setFeeComissionsPercent(3, agentComissionPercent);
-            await globalContract.splitComissions({value: amount});
-            await globalContract.sendComissionSplitedAgent();
+            await globalContract.setFeeCommissionsPercent(3, agentCommissionPercent);
+            await globalContract.splitCommissions({value: amount});
+            // sendCommissionSplitedAgent may trows an exception
+            await globalContract.sendCommissionSplitedAgent();
 
-            let comission = amount * (agentComissionPercent/100);
-            let expectedAccountBalance = agentInitialBalance.toNumber() + comission;
+            let commission = amount * (agentCommissionPercent/100);
+            let expectedAccountBalance = agentInitialBalance.toNumber() + commission;
             let currentAgentBalance = await web3.eth.getBalance(secondAccount);
             
             assert.equal(
@@ -174,14 +182,13 @@ contract('SmartProtectionPolicy', function(accounts) {
             assert.isTrue(await globalContract.agentPayed());
 
         } catch (error) {
-            console.log(error.message);
             assert.isOk(false);
         }
     });
 
-    it("should send fee to the broker calling sendComissionSplitedBroker", async () => {
+    it("should send fee to the broker calling sendCommissionSplitedBroker", async () => {
         try {
-            let brokerComissionPercent = 100; //8%
+            let brokerCommissionPercent = 100; //8%
             let amount = web3.toWei(3, "shannon");
 
             globalContract.broker = thirdAccount;
@@ -189,12 +196,13 @@ contract('SmartProtectionPolicy', function(accounts) {
 
             let brokerInitialBalance = await web3.eth.getBalance(thirdAccount);
             
-            await globalContract.setFeeComissionsPercent(brokerComissionPercent, 4);
-            await globalContract.splitComissions({value: amount});
-            await globalContract.sendComissionSplitedAgent();
+            await globalContract.setFeeCommissionsPercent(brokerCommissionPercent, 4);
+            await globalContract.splitCommissions({value: amount});
+            // sendCommissionSplitedBroker may trows an exception
+            await globalContract.sendCommissionSplitedBroker();
 
-            let comission = amount * (brokerComissionPercent/100);
-            let expectedAccountBalance = brokerInitialBalance.toNumber() + comission;
+            let commission = amount * (brokerCommissionPercent/100);
+            let expectedAccountBalance = brokerInitialBalance.toNumber() + commission;
             let currentBrokerBalance = await web3.eth.getBalance(thirdAccount);
             
             assert.equal(
@@ -207,5 +215,5 @@ contract('SmartProtectionPolicy', function(accounts) {
         } catch (error) {
             assert.isOk(false);
         }
-    });
+    });*/
 });
