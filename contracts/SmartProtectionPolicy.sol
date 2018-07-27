@@ -139,7 +139,7 @@ contract SmartProtectionPolicy {
             customer : acustomeraddress,
             premium : apremium,
             deductablePaymentValue : afranchise,
-            contractDuration : 1 years,
+            contractDuration : 365 days,
             policyBalanceValue : apremium
         });
 
@@ -180,11 +180,9 @@ contract SmartProtectionPolicy {
      */
     function sendDonationAmount(address donationsDestiny) public onlyOwner notDonatedYet {
         require(donationsDestiny == 0x0);
-        require(this.balance == 0x0);
+        require(address(this).balance == 0x0);
         
-        // My God give me OpenZeppelin math please
-        // (commissionFeeAgentPercent / 100) returns 0
-        donationValue = this.balance * donationsPercent;
+        donationValue = address(this).balance * donationsPercent;
         donationValue = donationValue / 100;
         donationsSocialDestiny.transfer(donationValue);
         donated = true;
@@ -204,7 +202,7 @@ contract SmartProtectionPolicy {
      * Only use thie method in phase 2
      */
     function splitCommissionsWithContractMoney() public onlyOwner payable returns(bool) {
-        return calculateCommissions(this.balance);
+        return calculateCommissions(address(this).balance);
     }
 
     /**
@@ -233,8 +231,6 @@ contract SmartProtectionPolicy {
          * Calculates and send a percent of ether to Broker
          */
         if (commissionFeeBrokerPercent != 0x0 ) {
-            // My God give me OpenZeppelin math please
-            // (commissionFeeBrokerPercent / 100) returns 0
             commissionFeeBrokerValue = msg.value * commissionFeeBrokerPercent;
             commissionFeeBrokerValue = commissionFeeBrokerValue / 100;
             totalCommissionPayable += commissionFeeBrokerValue;
