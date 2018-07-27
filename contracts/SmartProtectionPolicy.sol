@@ -413,4 +413,26 @@ contract SmartProtectionPolicy {
     function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
         return commissionFeeBrokerValue;
     }
+// UNCOMMENT TO RUN TESTS 12 TO 18 
+ /*
+    function getPolicyBalance() public view returns (uint) {
+        return policy.policyBalanceValue;
+    }
+
+    function getPolicyStatus() public view returns (StatusPolicy) {
+        return status;
+    }
+
+    function getClaims(uint _internalId) public view returns (uint, bool, bool, bool, bool, bool) {
+        uint8 x;
+        while (x < claims.length) {
+            if(claims[x].internalId == _internalId){
+                break;
+            }
+            x++;
+        }
+        return (claims[x].internalId, claims[x].idReceived, claims[x].videoReceived, 
+        claims[x].deductablePayed, claims[x].imeiBlocked, claims[x].policeNoticeReport);
+    }
+    */ 
 }

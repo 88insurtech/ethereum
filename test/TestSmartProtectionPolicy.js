@@ -229,4 +229,141 @@ contract('SmartProtectionPolicy', function(accounts) {
             assert.isOk(false, error.message);
         }
     });
+    
+    // 12
+    it('it should call Fnol with a value higher than policyBalanceValue.', async () => {
+        try {
+            let expectedValue = 0
+            let id = await globalContract.FNOL(1, 400)
+            let policyBalance = await globalContract.getPolicyBalance.call()
+            assert.isAbove(policyBalance, expectedValue, 'Its not possible to have a claim value higher than policyBalanceValue')
+        } catch (error) {
+            assert.isOk(true)
+        }
+    })
+
+    // 13
+    it('it should call Fnol multiple times until policyBalanceValue has zero value.', async () => {
+        try {
+            let expectedValue = 0
+
+            await globalContract.FNOL(1, 150)
+            await globalContract.FNOL(1, 150)
+
+            let policyBalance = await globalContract.getPolicyBalance.call()
+
+            assert.equal(policyBalance, expectedValue, 'Its not possible to have a claim value higher than policyBalanceValue')
+    
+        } catch (error) {
+            assert.isOk(false)
+        }
+    })
+
+    // 14
+    it('it should call setClaimDocumentationWorkFlow and set true for sented documents.', async () => {
+        try {
+            let _internalId = 1     
+            let _idReceived = true
+            let _videoReceived = true
+            let _deductablePayed = true
+            let _imeiBlock = true
+            let _policeNoticeReport = true
+            
+            await globalContract.FNOL(1, 150)
+            await globalContract.setClaimDocumentationWorkFlow(
+                _internalId, _idReceived, _videoReceived, _deductablePayed, _imeiBlock, _policeNoticeReport)
+        
+            let claimsInfo = await globalContract.getClaims(1)
+        
+            assert.equal(claimsInfo[0], _internalId, 'Its not possible request a specific internalId and get a different internalId by response.')
+            assert.equal(claimsInfo[1], true, 'The _idReceived its not set as received.')
+            assert.equal(claimsInfo[2], true, 'The _videoReceived its not set as received.')
+            assert.equal(claimsInfo[3], true, 'The _deductablePayed its not set as received.')
+            assert.equal(claimsInfo[4], true, 'The _imeiBlock its not set as received.')
+            assert.equal(claimsInfo[5], true, 'The _policeNoticeReport its not set as received.')
+        
+        } catch (error) {
+            assert.isOk(false)
+        }
+    })
+
+    // 15
+    it('it should call setClaimDocumentationWorkFlow accross diferents values setted.', async () => {
+        try {
+            let paramsArray = [
+                [null, null, null, null, null, null],
+                [1, false, true, true, true, true],
+                [2, true, false, true, true, true],
+                [3, true, true, false, true, true],
+                [4, true, true, true, false, true],
+                [5, true, true, true, true, false] 
+            ]
+
+            for (var i=1; i < paramsArray.length; i++) {
+                await globalContract.FNOL(i, 30)
+                await globalContract.setClaimDocumentationWorkFlow(...paramsArray[i])
+            
+                let claimsInfo = await globalContract.getClaims(i)
+
+                assert.equal(claimsInfo[0].toNumber(), i, 'Its not possible request a specific internalId and get a different internalId by response.')
+                assert.equal(claimsInfo[1], paramsArray[i][1], 'The _idReceived its not set as received.')
+                assert.equal(claimsInfo[2], paramsArray[i][2], 'The _videoReceived its not set as received.')
+                assert.equal(claimsInfo[3], paramsArray[i][3], 'The _deductablePayed its not set as received.')
+                assert.equal(claimsInfo[4], paramsArray[i][4], 'The _imeiBlock its not set as received.')
+                assert.equal(claimsInfo[5], paramsArray[i][5], 'The _policeNoticeReport its not set as received.')  
+            }
+
+        } catch (error) {
+            assert.isOk(false)
+        }
+    })    
+
+    // 16
+    it('it should call setClaimDocumentationWorkFlow passing an unvalid internalId - 0x0', async () => {
+        try {
+            let paramsArray = [0, false, true, true, true, true]
+            
+            await globalContract.FNOL(1, 30)
+            await globalContract.setClaimDocumentationWorkFlow(...paramsArray)
+        
+        } catch (error) {
+            assert.isOk(true)
+        }
+    })   
+
+    // 17
+    it('it should call finalizePolicy and finalize the policy.', async () => {
+        try {
+            let status
+            let policyBalance
+
+            await globalContract.finalizePolicy()
+            let event = await globalContract.ChangeStatus()
+
+            event.watch((err, result) => {
+                if (!err) {
+                    status = result.args.status.toNumber()
+                    policyBalance = result.args.eventValue.toNumber()
+
+                    assert.equal(status, 2, 'Expected 2 but received '+status)
+                    assert.equal(policyBalance, 300, 'Expected 300 but received '+policyBalance)
+                }
+            })
+            event.stopWatching()
+
+        } catch (error) {
+
+            assert.isOk(true)
+        }
+    })
+
+    // 18
+    it('it should call finalizePolicy and finalize the policy.', async () => {
+        try {
+            await globalContract.finalizePolicy({from: secondAccount})
+        } catch (error) {
+            assert.isOk(/revert/.test(error.message));
+        }
+    })
+
 });
