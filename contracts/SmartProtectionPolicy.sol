@@ -184,7 +184,7 @@ contract SmartProtectionPolicy {
      * This method change the percent of donation when the contract is expired
      */
     function changeDonationValue(uint8 percentOfDonation) public onlyOwner {
-        donationsPercent = 2;
+        donationsPercent = percentOfDonation;
     }
 
     /**
