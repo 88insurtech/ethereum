@@ -222,7 +222,7 @@ contract SmartProtectionPolicy {
         if (commissionFeeAgentPercent != 0x0 ) {
             // My God give me OpenZeppelin math please
             // (commissionFeeAgentPercent / 100) returns 0
-            commissionFeeAgentValue = msg.value * commissionFeeAgentPercent;
+            commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
             commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
         }
@@ -231,7 +231,7 @@ contract SmartProtectionPolicy {
          * Calculates and send a percent of ether to Broker
          */
         if (commissionFeeBrokerPercent != 0x0 ) {
-            commissionFeeBrokerValue = msg.value * commissionFeeBrokerPercent;
+            commissionFeeBrokerValue = originFunds * commissionFeeBrokerPercent;
             commissionFeeBrokerValue = commissionFeeBrokerValue / 100;
             totalCommissionPayable += commissionFeeBrokerValue;
         }
