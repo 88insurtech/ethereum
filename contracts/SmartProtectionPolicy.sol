@@ -1,5 +1,19 @@
 pragma solidity ^0.4.24;
 
+
+
+// v0.1.0
+// Author(s): Alex Braz Alex Silva Daniel Miranda
+
+// Contract in Alpha. 
+
+// # 88 Insurance Contract #
+// SmartProtectionPolicy
+// Involves four 'insurtech' -- 'agent', 'broker', 'customer'
+// Holds Ether from 'sender' to be transferred to 'customer' where a claim occur.
+// Ether in contract is transferred to 'agent' and 'broker' when a new Insurance is contracted by `customer`.
+// Contract has `1 year` validity
+// Some value `dinamically` is transferred to a Ether account for an Social impact.
 contract SmartProtectionPolicy {
 
     enum StatusPolicy { ACTIVE, FINISHED, INACTIVE, CONTAIN_CLAIM }
