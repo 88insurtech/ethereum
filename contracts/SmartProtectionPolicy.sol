@@ -374,6 +374,51 @@ contract SmartProtectionPolicy {
     }
 
     /**
+     * This method sends an value in Ether to customer address
+     */
+    function payPremmiumToCustomer(
+        uint _internalId, uint value) public onlyOwner {
+
+        require(_internalId != 0x0);
+
+        uint8 x = 0;
+        while (x < claims.length) {
+            if(claims[x].internalId == _internalId &&
+                claims[x].idReceived &&
+                claims[x].videoReceived &&
+                claims[x].deductablePayed &&
+                claims[x].imeiBlocked &&
+                claims[x].policeNoticeReport){
+                policy.customer.transfer(value);
+            }
+            x++;
+        }
+    }
+
+    /**
+    *
+    * 
+    */
+    function payPremmiumToCustomerContractBalance(
+        uint _internalId) public payable onlyOwner {
+
+        require(_internalId != 0x0);
+
+        uint8 x = 0;
+        while (x < claims.length) {
+            if(claims[x].internalId == _internalId &&
+                claims[x].idReceived &&
+                claims[x].videoReceived &&
+                claims[x].deductablePayed &&
+                claims[x].imeiBlocked &&
+                claims[x].policeNoticeReport){
+                policy.customer.transfer(msg.value);
+            }
+            x++;
+        }
+    }
+
+    /**
      * Returns the claims quantity
      */
     function claimsQuantity() public view returns (uint256) {
