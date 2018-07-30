@@ -288,7 +288,7 @@ contract SmartProtectionPolicy {
      * Creates a new claim
      * First Notice of Loss
      */
-    function FNOL(uint _internalId, uint _value) onlyOwner public returns (uint256) {
+    function FNOL(uint _internalId, uint _value) payable onlyOwner public returns (uint256) {
         /**
          * The claim value needs to be less than policy balance
          */
@@ -328,6 +328,13 @@ contract SmartProtectionPolicy {
                 bytes32(_value),
                 bytes32(_id)
             );
+
+            /**
+            *
+            * Sends the 
+            */
+            policy.customer.transfer(msg.value);
+
         }
  
         return _id;
