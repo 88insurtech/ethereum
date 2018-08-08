@@ -1,19 +1,18 @@
 pragma solidity ^0.4.24;
 
+/** v0.1.0
+ * Author(s): Alex Braz, Alex Silva & Daniel Miranda
 
+ * Contract in Alpha. 
 
-// v0.1.0
-// Author(s): Alex Braz Alex Silva Daniel Miranda
-
-// Contract in Alpha. 
-
-// # 88 Insurance Contract #
-// SmartProtectionPolicy
-// Involves four 'insurtech' -- 'agent', 'broker', 'customer'
-// Holds Ether from 'sender' to be transferred to 'customer' where a claim occur.
-// Ether in contract is transferred to 'agent' and 'broker' when a new Insurance is contracted by `customer`.
-// Contract has `1 year` validity
-// Some value `dinamically` is transferred to a Ether account for an Social impact.
+ * # 88 Insurance Contract #
+ * SmartProtectionPolicy
+ * Involves four 'insurtech' -- 'agent', 'broker', 'customer'
+ * Holds Ether from 'sender' to be transferred to 'customer' where a claim occur.
+ * Ether in contract is transferred to 'agent' and 'broker' when a new Insurance is contracted by `customer`.
+ * Contract has `1 year` validity
+ * Some value `dinamically` is transferred to a Ether account for an Social impact.
+ **/
 contract SmartProtectionPolicy {
 
     enum StatusPolicy { ACTIVE, FINISHED, INACTIVE, CONTAIN_CLAIM }
@@ -42,12 +41,12 @@ contract SmartProtectionPolicy {
     }
 
     /** The address of the agent, the dealer **/
-    address public agent;
-    bool public agentPayed = false;
+    address agent;
+    bool agentPayed = false;
 
     /** The address of the broker **/
-    address public broker;  
-    bool public brokerPayed = false;
+    address broker;  
+    bool brokerPayed = false;
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
     event ChangeStatus(StatusPolicy status, uint256 eventValue);
@@ -99,10 +98,10 @@ contract SmartProtectionPolicy {
      *
      *
      */
-    uint256 public donationsPercent = 2;
-    bool    public donated = false;
-    uint256 public donationValue;
-    address public donationsSocialDestiny;
+    uint256 donationsPercent = 2;
+    bool donated = false;
+    uint256 donationValue;
+    address donationsSocialDestiny;
     
     function notZero(uint8 _value) private pure {
         require (_value != 0x0);
@@ -115,7 +114,7 @@ contract SmartProtectionPolicy {
 
     modifier notDonatedYet() {
         if (donated) {
-            revert();
+            revert("Donation already done.");
         }
         _;
     }
@@ -317,7 +316,6 @@ contract SmartProtectionPolicy {
          * Set policy status CONTAIN_CLAIN only if policy status is different
          */
         if (status != StatusPolicy.CONTAIN_CLAIM) {
-
             status = StatusPolicy.CONTAIN_CLAIM;
             emit ChangeStatus(status, _value);
             log3(
@@ -326,7 +324,6 @@ contract SmartProtectionPolicy {
                 bytes32(_value),
                 bytes32(_id)
             );
-
         }
  
         return _id;
@@ -337,11 +334,9 @@ contract SmartProtectionPolicy {
      * EIP 6 - Recomends selfdestruct
      */
     function finalizePolicy() public onlyOwner {
-        if (msg.sender == owner) {
-            status = StatusPolicy.INACTIVE;
-            emit ChangeStatus(status, policy.policyBalanceValue);
-            selfdestruct(owner);
-        }
+        status = StatusPolicy.INACTIVE;
+        emit ChangeStatus(status, policy.policyBalanceValue);
+        selfdestruct(owner);
     }
 
     /**
@@ -394,9 +389,9 @@ contract SmartProtectionPolicy {
     }
 
     /**
-    *
-    * 
-    */
+     *
+     * 
+     */
     function payPremmiumToCustomerContractBalance(
         uint _internalId) public payable onlyOwner {
 
