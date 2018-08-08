@@ -109,9 +109,7 @@ contract SmartProtectionPolicy {
     }
 
     modifier onlyOwner() {
-        if (msg.sender != owner) {
-            revert();
-        }
+        require(msg.sender == owner, "You're not the owner.");
         _;
     }
 
@@ -163,7 +161,7 @@ contract SmartProtectionPolicy {
     /**
      * 
      */
-    function setFeeCommissionsPercent(uint8 _broker, uint8 _agent) onlyOwner public returns (bool) {
+    function setFeeCommissionsPercent(uint8 _broker, uint8 _agent) public onlyOwner returns (bool) {
         /**Avoid zero fee commission **/
         notZero(_broker);
         notZero(_agent);
@@ -288,7 +286,7 @@ contract SmartProtectionPolicy {
      * Creates a new claim
      * First Notice of Loss
      */
-    function FNOL(uint _internalId, uint _value) onlyOwner public returns (uint256) {
+    function FNOL(uint _internalId, uint _value) public onlyOwner returns (uint256) {
         /**
          * The claim value needs to be less than policy balance
          */
@@ -383,7 +381,7 @@ contract SmartProtectionPolicy {
 
         uint8 x = 0;
         while (x < claims.length) {
-            if(claims[x].internalId == _internalId &&
+            if(claims[x].internalId == _internalId && 
                 claims[x].idReceived &&
                 claims[x].videoReceived &&
                 claims[x].deductablePayed &&
