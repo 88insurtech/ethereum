@@ -28,7 +28,8 @@ contract('SmartProtectionPolicy', function(accounts) {
                 2500.00,
                 300.00,
                 70.00,
-                "Samsung Galaxy S7"
+                "Samsung Galaxy S7",
+                { from: secondAccount }
             );
         } catch (error) {
             assert.isOk(false);
