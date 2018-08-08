@@ -1,7 +1,5 @@
 pragma solidity ^0.4.24;
 
-
-
 // v0.1.0
 // Author(s): Alex Braz Alex Silva Daniel Miranda
 
@@ -95,7 +93,7 @@ contract SmartProtectionPolicy {
      * The owner can modify it calling changeDonationValue method
      *
      * When the contract is expired, the owner can call sendDonationAmount method
-     * That method (sendDonationAmount) will send to a address the correspondent value in Ethers
+     * That method (sendDonationAmount) will send to an address the correspondent value in Ethers
      *
      *
      */
@@ -104,10 +102,6 @@ contract SmartProtectionPolicy {
     uint256 public donationValue;
     address public donationsSocialDestiny;
     
-    function notZero(uint8 _value) private pure {
-        require (_value != 0x0);
-    }
-
     modifier onlyOwner() {
         require(msg.sender == owner, "You're not the owner.");
         _;
@@ -156,6 +150,10 @@ contract SmartProtectionPolicy {
         });
 
         emit ChangeStatus(defaultStatus, apremium);
+    }
+
+    function notZero(uint8 _value) private pure {
+        require (_value != 0x0);
     }
     
     /**
@@ -232,8 +230,6 @@ contract SmartProtectionPolicy {
          * Calculates and send a percent of ether to Agent
          */
         if (commissionFeeAgentPercent != 0x0 ) {
-            // My God give me OpenZeppelin math please
-            // (commissionFeeAgentPercent / 100) returns 0
             commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
             commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
@@ -461,4 +457,26 @@ contract SmartProtectionPolicy {
     function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
         return commissionFeeBrokerValue;
     }
+// UNCOMMENT TO RUN TESTS 12 TO 18 
+ /*
+    function getPolicyBalance() public view returns (uint) {
+        return policy.policyBalanceValue;
+    }
+
+    function getPolicyStatus() public view returns (StatusPolicy) {
+        return status;
+    }
+
+    function getClaims(uint _internalId) public view returns (uint, bool, bool, bool, bool, bool) {
+        uint8 x;
+        while (x < claims.length) {
+            if(claims[x].internalId == _internalId){
+                break;
+            }
+            x++;
+        }
+        return (claims[x].internalId, claims[x].idReceived, claims[x].videoReceived, 
+        claims[x].deductablePayed, claims[x].imeiBlocked, claims[x].policeNoticeReport);
+    }
+    */ 
 }
