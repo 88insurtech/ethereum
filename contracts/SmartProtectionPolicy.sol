@@ -40,12 +40,12 @@ contract SmartProtectionPolicy {
     }
 
     /** The address of the agent, the dealer **/
-    address public agent;
-    bool public agentPayed = false;
+    address  agent;
+    bool  agentPayed = false;
 
     /** The address of the broker **/
-    address public broker;  
-    bool public brokerPayed = false;
+    address  broker;  
+    bool  brokerPayed = false;
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
     event ChangeStatus(StatusPolicy status, uint256 eventValue);
@@ -70,7 +70,7 @@ contract SmartProtectionPolicy {
     }
 
     /** One contract can have zero or n claims **/
-    Claim[] public claims;
+    Claim[] claims;
 
     /** The percent of fee **/
     uint256 commissionFeePercent = 2;
@@ -97,10 +97,10 @@ contract SmartProtectionPolicy {
      *
      *
      */
-    uint256 public donationsPercent = 2;
-    bool    public donated = false;
-    uint256 public donationValue;
-    address public donationsSocialDestiny;
+    uint256  donationsPercent = 2;
+    bool     donated = false;
+    uint256  donationValue;
+    address  donationsSocialDestiny;
     
     modifier onlyOwner() {
         require(msg.sender == owner, "You're not the owner.");
