@@ -1,17 +1,18 @@
 pragma solidity ^0.4.24;
 
-// v0.1.0
-// Author(s): Alex Braz Alex Silva Daniel Miranda
+/** v0.1.0
+ * Author(s): Alex Braz, Alex Silva & Daniel Miranda
 
-// Contract in Alpha. 
+ * Contract in Alpha. 
 
-// # 88 Insurance Contract #
-// SmartProtectionPolicy
-// Involves four 'insurtech' -- 'agent', 'broker', 'customer'
-// Holds Ether from 'sender' to be transferred to 'customer' where a claim occur.
-// Ether in contract is transferred to 'agent' and 'broker' when a new Insurance is contracted by `customer`.
-// Contract has `1 year` validity
-// Some value `dinamically` is transferred to a Ether account for an Social impact.
+ * # 88 Insurance Contract #
+ * SmartProtectionPolicy
+ * Involves four 'insurtech' -- 'agent', 'broker', 'customer'
+ * Holds Ether from 'sender' to be transferred to 'customer' where a claim occur.
+ * Ether in contract is transferred to 'agent' and 'broker' when a new Insurance is contracted by `customer`.
+ * Contract has `1 year` validity
+ * Some value `dinamically` is transferred to a Ether account for an Social impact.
+ **/
 contract SmartProtectionPolicy {
 
     enum StatusPolicy { ACTIVE, FINISHED, INACTIVE, CONTAIN_CLAIM }
@@ -40,12 +41,12 @@ contract SmartProtectionPolicy {
     }
 
     /** The address of the agent, the dealer **/
-    address  agent;
-    bool  agentPayed = false;
+    address agent;
+    bool agentPayed = false;
 
     /** The address of the broker **/
-    address  broker;  
-    bool  brokerPayed = false;
+    address broker;  
+    bool brokerPayed = false;
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
     event ChangeStatus(StatusPolicy status, uint256 eventValue);
@@ -97,10 +98,10 @@ contract SmartProtectionPolicy {
      *
      *
      */
-    uint256  donationsPercent = 2;
-    bool     donated = false;
-    uint256  donationValue;
-    address  donationsSocialDestiny;
+    uint256 donationsPercent = 2;
+    bool donated = false;
+    uint256 donationValue;
+    address donationsSocialDestiny;
     
     modifier onlyOwner() {
         require(msg.sender == owner, "You're not the owner.");
@@ -109,7 +110,7 @@ contract SmartProtectionPolicy {
 
     modifier notDonatedYet() {
         if (donated) {
-            revert();
+            revert("Donation already done.");
         }
         _;
     }
@@ -197,8 +198,8 @@ contract SmartProtectionPolicy {
      * you can call this method once
      */
     function sendDonationAmount(address donationsDestiny) public onlyOwner notDonatedYet {
-        require(donationsDestiny == 0x0);
-        require(address(this).balance == 0x0);
+        require(donationsDestiny != 0x0);
+        require(address(this).balance != 0x0);
         
         donationValue = address(this).balance * donationsPercent;
         donationValue = donationValue / 100;
@@ -321,7 +322,6 @@ contract SmartProtectionPolicy {
          * Set policy status CONTAIN_CLAIN only if policy status is different
          */
         if (status != StatusPolicy.CONTAIN_CLAIM) {
-
             status = StatusPolicy.CONTAIN_CLAIM;
             emit ChangeStatus(status, _value);
             log3(
@@ -330,7 +330,6 @@ contract SmartProtectionPolicy {
                 bytes32(_value),
                 bytes32(_id)
             );
-
         }
  
         return _id;
@@ -341,11 +340,9 @@ contract SmartProtectionPolicy {
      * EIP 6 - Recomends selfdestruct
      */
     function finalizePolicy() public onlyOwner {
-        if (msg.sender == owner) {
-            status = StatusPolicy.INACTIVE;
-            emit ChangeStatus(status, policy.policyBalanceValue);
-            selfdestruct(owner);
-        }
+        status = StatusPolicy.INACTIVE;
+        emit ChangeStatus(status, policy.policyBalanceValue);
+        selfdestruct(owner);
     }
 
     /**
@@ -378,19 +375,17 @@ contract SmartProtectionPolicy {
     /**
      * This method sends an value in Ether to customer address
      */
-    function payPremmiumToCustomer(
-        uint _internalId, uint value) public onlyOwner {
-
+    function payPremmiumToCustomer(uint _internalId, uint value) public onlyOwner {
         require(_internalId != 0x0);
 
         uint8 x = 0;
         while (x < claims.length) {
-            if(claims[x].internalId == _internalId && 
-                claims[x].idReceived &&
-                claims[x].videoReceived &&
-                claims[x].deductablePayed &&
-                claims[x].imeiBlocked &&
-                claims[x].policeNoticeReport){
+            if (claims[x].internalId == _internalId
+                && claims[x].idReceived
+                && claims[x].videoReceived
+                && claims[x].deductablePayed
+                && claims[x].imeiBlocked
+                && claims[x].policeNoticeReport) {
                 policy.customer.transfer(value);
             }
             x++;
@@ -398,22 +393,20 @@ contract SmartProtectionPolicy {
     }
 
     /**
-    *
-    * 
-    */
-    function payPremmiumToCustomerContractBalance(
-        uint _internalId) public payable onlyOwner {
-
+     *
+     * 
+     */
+    function payPremmiumToCustomerContractBalance(uint _internalId) public payable onlyOwner {
         require(_internalId != 0x0);
 
         uint8 x = 0;
         while (x < claims.length) {
-            if(claims[x].internalId == _internalId &&
+            if (claims[x].internalId == _internalId &&
                 claims[x].idReceived &&
                 claims[x].videoReceived &&
                 claims[x].deductablePayed &&
                 claims[x].imeiBlocked &&
-                claims[x].policeNoticeReport){
+                claims[x].policeNoticeReport) {
                 policy.customer.transfer(msg.value);
             }
             x++;
@@ -465,17 +458,21 @@ contract SmartProtectionPolicy {
     function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
         return commissionFeeBrokerValue;
     }
-// UNCOMMENT TO RUN TESTS 12 TO 18 
- /*
-    function getPolicyBalance() public view returns (uint) {
+
+    function getPolicyBalance() public view onlyOwner returns (uint) {
         return policy.policyBalanceValue;
     }
 
-    function getPolicyStatus() public view returns (StatusPolicy) {
+    function getPolicyStatus() public view onlyOwner returns (StatusPolicy) {
         return status;
     }
 
-    function getClaims(uint _internalId) public view returns (uint, bool, bool, bool, bool, bool) {
+    function getClaims(uint _internalId) 
+        public 
+        view 
+        onlyOwner 
+        returns (uint, bool, bool, bool, bool, bool) 
+    {
         uint8 x;
         while (x < claims.length) {
             if(claims[x].internalId == _internalId){
@@ -486,5 +483,4 @@ contract SmartProtectionPolicy {
         return (claims[x].internalId, claims[x].idReceived, claims[x].videoReceived, 
         claims[x].deductablePayed, claims[x].imeiBlocked, claims[x].policeNoticeReport);
     }
-    */ 
 }
