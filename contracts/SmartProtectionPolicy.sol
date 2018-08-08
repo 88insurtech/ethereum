@@ -190,8 +190,8 @@ contract SmartProtectionPolicy {
      * you can call this method once
      */
     function sendDonationAmount(address donationsDestiny) public onlyOwner notDonatedYet {
-        require(donationsDestiny == 0x0);
-        require(address(this).balance == 0x0);
+        require(donationsDestiny != 0x0);
+        require(address(this).balance != 0x0);
         
         donationValue = address(this).balance * donationsPercent;
         donationValue = donationValue / 100;
@@ -367,19 +367,17 @@ contract SmartProtectionPolicy {
     /**
      * This method sends an value in Ether to customer address
      */
-    function payPremmiumToCustomer(
-        uint _internalId, uint value) public onlyOwner {
-
+    function payPremmiumToCustomer(uint _internalId, uint value) public onlyOwner {
         require(_internalId != 0x0);
 
         uint8 x = 0;
         while (x < claims.length) {
-            if(claims[x].internalId == _internalId && 
-                claims[x].idReceived &&
-                claims[x].videoReceived &&
-                claims[x].deductablePayed &&
-                claims[x].imeiBlocked &&
-                claims[x].policeNoticeReport){
+            if (claims[x].internalId == _internalId
+                && claims[x].idReceived
+                && claims[x].videoReceived
+                && claims[x].deductablePayed
+                && claims[x].imeiBlocked
+                && claims[x].policeNoticeReport) {
                 policy.customer.transfer(value);
             }
             x++;
@@ -390,19 +388,17 @@ contract SmartProtectionPolicy {
      *
      * 
      */
-    function payPremmiumToCustomerContractBalance(
-        uint _internalId) public payable onlyOwner {
-
+    function payPremmiumToCustomerContractBalance(uint _internalId) public payable onlyOwner {
         require(_internalId != 0x0);
 
         uint8 x = 0;
         while (x < claims.length) {
-            if(claims[x].internalId == _internalId &&
+            if (claims[x].internalId == _internalId &&
                 claims[x].idReceived &&
                 claims[x].videoReceived &&
                 claims[x].deductablePayed &&
                 claims[x].imeiBlocked &&
-                claims[x].policeNoticeReport){
+                claims[x].policeNoticeReport) {
                 policy.customer.transfer(msg.value);
             }
             x++;
@@ -454,17 +450,21 @@ contract SmartProtectionPolicy {
     function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
         return commissionFeeBrokerValue;
     }
-    
-    /** UNCOMMENT TO RUN TESTS 12 TO 18 
-    function getPolicyBalance() public view returns (uint) {
+
+    function getPolicyBalance() public view onlyOwner returns (uint) {
         return policy.policyBalanceValue;
     }
 
-    function getPolicyStatus() public view returns (StatusPolicy) {
+    function getPolicyStatus() public view onlyOwner returns (StatusPolicy) {
         return status;
     }
 
-    function getClaims(uint _internalId) public view returns (uint, bool, bool, bool, bool, bool) {
+    function getClaims(uint _internalId) 
+        public 
+        view 
+        onlyOwner 
+        returns (uint, bool, bool, bool, bool, bool) 
+    {
         uint8 x;
         while (x < claims.length) {
             if(claims[x].internalId == _internalId){
@@ -475,5 +475,4 @@ contract SmartProtectionPolicy {
         return (claims[x].internalId, claims[x].idReceived, claims[x].videoReceived, 
         claims[x].deductablePayed, claims[x].imeiBlocked, claims[x].policeNoticeReport);
     }
-    **/ 
 }
