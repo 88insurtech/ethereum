@@ -121,7 +121,11 @@ contract SmartProtectionPolicy {
         uint256 avalueOfProperty, 
         uint256 apremium, 
         uint256 afranchise, 
-        string ainsuredItem) public {
+        string ainsuredItem,
+        address aagent,
+        address abroker,
+        address adonationsSocialDestiny
+        ) public {
 
         owner = msg.sender;
 
@@ -148,6 +152,10 @@ contract SmartProtectionPolicy {
             contractDuration : 365 days,
             policyBalanceValue : apremium
         });
+
+        agent = aagent;
+        broker = abroker;
+        donationsSocialDestiny = adonationsSocialDestiny;
 
         emit ChangeStatus(defaultStatus, apremium);
     }
