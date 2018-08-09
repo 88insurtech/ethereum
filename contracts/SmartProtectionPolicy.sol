@@ -74,14 +74,14 @@ contract SmartProtectionPolicy {
     Claim[] claims;
 
     /** The percent of fee **/
-    uint256 commissionFeePercent = 2;
+    uint8 commissionFeePercent = 2;
     uint256 commissionFeeValue = 0x0;
 
     /** The percent (%) of fee to the Broker **/
-    uint256 commissionFeeBrokerPercent = 1;
+    uint8 commissionFeeBrokerPercent = 1;
 
     /** The percent (%) of fee to the agent **/
-    uint256 commissionFeeAgentPercent = 1;
+    uint8 commissionFeeAgentPercent = 1;
 
     /** The commission values for stakeholders **/
     uint256 commissionFeeBrokerValue = 0x0; /** The value of fee in Ether to be sended to Broker **/
@@ -238,7 +238,7 @@ contract SmartProtectionPolicy {
         /**
          * Calculates and send a percent of ether to Agent
          */
-        if (commissionFeeAgentPercent != 0x0 ) {
+        if (commissionFeeAgentPercent != 0x0) {
             commissionFeeAgentValue = originFunds * commissionFeeAgentPercent;
             commissionFeeAgentValue = commissionFeeAgentValue / 100;
             totalCommissionPayable += commissionFeeAgentValue;
@@ -247,7 +247,7 @@ contract SmartProtectionPolicy {
         /**
          * Calculates and send a percent of ether to Broker
          */
-        if (commissionFeeBrokerPercent != 0x0 ) {
+        if (commissionFeeBrokerPercent != 0x0) {
             commissionFeeBrokerValue = originFunds * commissionFeeBrokerPercent;
             commissionFeeBrokerValue = commissionFeeBrokerValue / 100;
             totalCommissionPayable += commissionFeeBrokerValue;
