@@ -116,49 +116,49 @@ contract SmartProtectionPolicy {
     }
     
     constructor (
-        address acustomeraddress, 
-        string acustomerName, 
-        uint256 apolicynumber, 
-        uint256 avalueOfProperty, 
-        uint256 apremium, 
-        uint256 afranchise, 
-        string ainsuredItem,
-        address aagent,
-        address abroker,
-        address adonationsSocialDestiny
+        address _customeraddress, 
+        string _customerName, 
+        uint256 _policynumber, 
+        uint256 _valueOfProperty, 
+        uint256 _premium, 
+        uint256 _franchise, 
+        string _insuredItem,
+        address _agent,
+        address _broker,
+        address _donationsSocialDestiny
         ) public {
 
         owner = msg.sender;
 
-        require(apolicynumber != 0x0);
-        require(avalueOfProperty != 0x0);
-        require(apremium != 0x0);
-        require(afranchise != 0x0);
+        require(_policynumber != 0x0);
+        require(_valueOfProperty != 0x0);
+        require(_premium != 0x0);
+        require(_franchise != 0x0);
         
-        bytes memory tempEmptyStringTest = bytes(ainsuredItem); // Uses memory
+        bytes memory tempEmptyStringTest = bytes(_insuredItem); // Uses memory
         if (tempEmptyStringTest.length == 0) {
             // emptyStringTest is an empty string
-            ainsuredItem = "The value of Insured Item is not provided";
+            _insuredItem = "The value of Insured Item is not provided";
         }
 
         policy = Policy({
             startPolicyTime : now,
-            policyNumber : apolicynumber,
-            valueOfProperty : avalueOfProperty,
-            insuredItem : ainsuredItem,
-            customerName : acustomerName,
-            customer : acustomeraddress,
-            premium : apremium,
-            deductablePaymentValue : afranchise,
+            policyNumber : _policynumber,
+            valueOfProperty : _valueOfProperty,
+            insuredItem : _insuredItem,
+            customerName : _customerName,
+            customer : _customeraddress,
+            premium : _premium,
+            deductablePaymentValue : _franchise,
             contractDuration : 365 days,
-            policyBalanceValue : apremium
+            policyBalanceValue : _premium
         });
 
-        agent = aagent;
-        broker = abroker;
-        donationsSocialDestiny = adonationsSocialDestiny;
+        agent = _agent;
+        broker = _broker;
+        donationsSocialDestiny = _donationsSocialDestiny;
 
-        emit ChangeStatus(defaultStatus, apremium);
+        emit ChangeStatus(defaultStatus, _premium);
     }
 
     function notZero(uint8 _value) private pure {

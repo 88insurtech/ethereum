@@ -3,18 +3,21 @@ var SmartProtectionPolicy = artifacts.require("SmartProtectionPolicy");
 contract('SmartProtectionPolicy', function(accounts) {
 
     let globalContract;
-    const [firstAccount, secondAccount, thirdAccount] = accounts;
+    const [firstAccount, secondAccount, thirdAccount, fourthAccount] = accounts;
 
     // Every scenario has a contract for tests prepared
     beforeEach(async () => {
         globalContract = await SmartProtectionPolicy.new(
-            thirdAccount,
+            secondAccount,
             "Alex Silva",
             88,  
-            2500.00,
-            300.00,
+            2280.00,
+            342.00,
             70.00,
-            "Samsung Galaxy S7"
+            "Samsung Galaxy S7",
+            thirdAccount,
+            fourthAccount,
+            firstAccount
         );
     });
 
@@ -28,7 +31,10 @@ contract('SmartProtectionPolicy', function(accounts) {
                 2500.00,
                 300.00,
                 70.00,
-                "Samsung Galaxy S7"
+                "Samsung Galaxy S7",
+                secondAccount,
+                fourthAccount,
+                firstAccount
             );
         } catch (error) {
             assert.isOk(false);
@@ -53,7 +59,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 let contract = await SmartProtectionPolicy.new(...paramsArray[i]);
                 assert.isOk(false);
             } catch (error) {
-                assert.isOk(/constructor expected \d arguments, received \d/.test(error.message));
+                assert.isOk(/constructor expected \d+ arguments, received \d+/.test(error.message));
             }   
         }
     });
@@ -264,7 +270,7 @@ contract('SmartProtectionPolicy', function(accounts) {
     // 14
     it('it should call setClaimDocumentationWorkFlow and set true for sented documents.', async () => {
         try {
-            let _internalId = 1     
+            let _internalId = 1
             let _idReceived = true
             let _videoReceived = true
             let _deductablePayed = true
