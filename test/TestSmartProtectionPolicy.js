@@ -14,7 +14,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             2500.00,
             300.00,
             70.00,
-            "Samsung Galaxy S7",
+            "Samsung Galaxy S7"
         );
     });
 
@@ -28,12 +28,13 @@ contract('SmartProtectionPolicy', function(accounts) {
                 2500.00,
                 300.00,
                 70.00,
-                "Samsung Galaxy S7",
-                { from: secondAccount }
+                "Samsung Galaxy S7"
             );
         } catch (error) {
             assert.isOk(false);
         }
+
+        assert.equal(0, await contract.getPolicyStatus());
         assert.isTrue(/0x[0-9A-Fa-f]{40}/.test(contract.address));
         assert.isTrue(/0x[0-9A-Fa-f]{64}/.test(contract.transactionHash));
     });
@@ -113,19 +114,19 @@ contract('SmartProtectionPolicy', function(accounts) {
 
     it("should change donationsPercent calling changeDonationValue", async () => {
         let value = 7;
-        assert.equal(await globalContract.donationsPercent(), 2);
+        assert.equal(await globalContract.getDonationsPercent(), 2);
         await globalContract.changeDonationValue(value);
-        assert.equal(await globalContract.donationsPercent(), 7);
+        assert.equal(await globalContract.getDonationsPercent(), 7);
     });
 
     it("should not change donationsPercent from another account", async () => {
         try {
-            assert.equal(await globalContract.donationsPercent(), 2);
+            assert.equal(await globalContract.getDonationsPercent(), 2);
             await globalContract.changeDonationValue(7, {from: thirdAccount});
             assert.isOk(false);
         } catch (error) {
             assert.isOk(/revert/.test(error.message));
-            assert.equal(await globalContract.donationsPercent(), 2);
+            assert.equal(await globalContract.getDonationsPercent(), 2);
         }
     });
 
@@ -173,7 +174,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             let amount = web3.toWei(2, "shannon");
 
             globalContract.agent = secondAccount;
-            assert.isFalse(await globalContract.agentPayed());
+            assert.isFalse(await globalContract.isAgentPayed());
 
             let agentInitialBalance = await web3.eth.getBalance(secondAccount);
             
@@ -192,7 +193,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 expectedAccountBalance,
                 "Something went wrong with transfer"
             );*/
-            assert.isTrue(await globalContract.agentPayed());
+            assert.isTrue(await globalContract.isAgentPayed());
 
         } catch (error) {
             assert.isOk(false, error.message);
@@ -205,7 +206,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             let amount = web3.toWei(3, "shannon");
 
             globalContract.broker = thirdAccount;
-            assert.isFalse(await globalContract.brokerPayed());
+            assert.isFalse(await globalContract.isBrokerPayed());
 
             let brokerInitialBalance = await web3.eth.getBalance(thirdAccount);
             
@@ -224,7 +225,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 currentBrokerBalance.toNumber(),
                 "Something went wrong with transfer"
             );*/
-            assert.isTrue(await globalContract.brokerPayed());
+            assert.isTrue(await globalContract.isBrokerPayed());
 
         } catch (error) {
             assert.isOk(false, error.message);

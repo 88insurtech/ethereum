@@ -98,7 +98,7 @@ contract SmartProtectionPolicy {
      *
      *
      */
-    uint256 donationsPercent = 2;
+    uint8 donationsPercent = 2;
     bool donated = false;
     uint256 donationValue;
     address donationsSocialDestiny;
@@ -449,6 +449,22 @@ contract SmartProtectionPolicy {
 
     function getCommissionFeeBrokerValue() public view onlyOwner returns (uint256) {
         return commissionFeeBrokerValue;
+    }
+
+    function getDonationValue() public view onlyOwner returns (uint256) {
+        return donationValue;
+    }
+
+    function getDonationsPercent() public view onlyOwner returns (uint8) {
+        return donationsPercent;
+    }
+
+    function isAgentPayed() public view returns (bool) {
+        return agentPayed;
+    }
+
+    function isBrokerPayed() public view returns (bool) {
+        return brokerPayed;
     }
 
     function getPolicyBalance() public view onlyOwner returns (uint) {
