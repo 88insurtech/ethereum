@@ -42,17 +42,17 @@ contract SmartProtectionPolicy {
 
     /** The address of the agent, the dealer **/
     address agent;
-    bool agentPayed = false;
+    bool agentPaid = false;
 
     /** The address of the broker **/
     address broker;  
-    bool brokerPayed = false;
+    bool brokerPaid = false;
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
     event ChangeStatus(StatusPolicy status, uint256 eventValue);
 
     /** This event changes the Apolice Status, and is called when something very important occurs **/
-    event CommissionPayed(address _address, uint256 eventValue);
+    event CommissionPaid(address _address, uint256 eventValue);
 
     /**
      * The Claim object, one contract can be zero or n claims
@@ -65,7 +65,7 @@ contract SmartProtectionPolicy {
         uint dateTime;
         bool idReceived;
         bool videoReceived;
-        bool deductablePayed;
+        bool deductablePaid;
         bool imeiBlocked;
         bool policeNoticeReport;
     }
@@ -268,7 +268,7 @@ contract SmartProtectionPolicy {
     function sendCommissionSplitedAgent() public onlyOwner returns (bool) {
         if (commissionFeeAgentValue != 0x0) {
             agent.transfer(commissionFeeAgentValue);
-            agentPayed = true;
+            agentPaid = true;
         }
         
         return true;
@@ -281,7 +281,7 @@ contract SmartProtectionPolicy {
     function sendCommissionSplitedBroker() public onlyOwner returns (bool) {
         if (commissionFeeBrokerValue != 0x0) {
             broker.transfer(commissionFeeBrokerValue);
-            brokerPayed = true;
+            brokerPaid = true;
         }
         
         return true;
@@ -308,7 +308,7 @@ contract SmartProtectionPolicy {
             dateTime: now,
             idReceived: false,
             videoReceived: false,
-            deductablePayed: false,
+            deductablePaid: false,
             imeiBlocked: false,
             policeNoticeReport: false
         }));
@@ -352,7 +352,7 @@ contract SmartProtectionPolicy {
         uint _internalId, 
         bool _idReceived, 
         bool _videoReceived, 
-        bool _deductablePayed, 
+        bool _deductablePaid, 
         bool _imeiBlock, 
         bool _policeNoticeReport) public onlyOwner {
 
@@ -363,7 +363,7 @@ contract SmartProtectionPolicy {
             if(claims[x].internalId == _internalId){
                 claims[x].idReceived = _idReceived;
                 claims[x].videoReceived = _videoReceived;
-                claims[x].deductablePayed = _deductablePayed;
+                claims[x].deductablePaid = _deductablePaid;
                 claims[x].imeiBlocked = _imeiBlock;
                 claims[x].policeNoticeReport = _policeNoticeReport;
                 return;
@@ -383,7 +383,7 @@ contract SmartProtectionPolicy {
             if (claims[x].internalId == _internalId
                 && claims[x].idReceived
                 && claims[x].videoReceived
-                && claims[x].deductablePayed
+                && claims[x].deductablePaid
                 && claims[x].imeiBlocked
                 && claims[x].policeNoticeReport) {
                 policy.customer.transfer(value);
@@ -404,7 +404,7 @@ contract SmartProtectionPolicy {
             if (claims[x].internalId == _internalId &&
                 claims[x].idReceived &&
                 claims[x].videoReceived &&
-                claims[x].deductablePayed &&
+                claims[x].deductablePaid &&
                 claims[x].imeiBlocked &&
                 claims[x].policeNoticeReport) {
                 policy.customer.transfer(msg.value);
@@ -467,12 +467,12 @@ contract SmartProtectionPolicy {
         return donationsPercent;
     }
 
-    function isAgentPayed() public view returns (bool) {
-        return agentPayed;
+    function isAgentPaid() public view returns (bool) {
+        return agentPaid;
     }
 
-    function isBrokerPayed() public view returns (bool) {
-        return brokerPayed;
+    function isBrokerPaid() public view returns (bool) {
+        return brokerPaid;
     }
 
     function getPolicyBalance() public view onlyOwner returns (uint) {
@@ -497,6 +497,6 @@ contract SmartProtectionPolicy {
             x++;
         }
         return (claims[x].internalId, claims[x].idReceived, claims[x].videoReceived, 
-        claims[x].deductablePayed, claims[x].imeiBlocked, claims[x].policeNoticeReport);
+        claims[x].deductablePaid, claims[x].imeiBlocked, claims[x].policeNoticeReport);
     }
 }

@@ -180,7 +180,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             let amount = web3.toWei(2, "shannon");
 
             globalContract.agent = secondAccount;
-            assert.isFalse(await globalContract.isAgentPayed());
+            assert.isFalse(await globalContract.isAgentPaid());
 
             let agentInitialBalance = await web3.eth.getBalance(secondAccount);
             
@@ -199,7 +199,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 expectedAccountBalance,
                 "Something went wrong with transfer"
             );*/
-            assert.isTrue(await globalContract.isAgentPayed());
+            assert.isTrue(await globalContract.isAgentPaid());
 
         } catch (error) {
             assert.isOk(false, error.message);
@@ -212,7 +212,7 @@ contract('SmartProtectionPolicy', function(accounts) {
             let amount = web3.toWei(3, "shannon");
 
             globalContract.broker = thirdAccount;
-            assert.isFalse(await globalContract.isBrokerPayed());
+            assert.isFalse(await globalContract.isBrokerPaid());
 
             let brokerInitialBalance = await web3.eth.getBalance(thirdAccount);
             
@@ -231,7 +231,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 currentBrokerBalance.toNumber(),
                 "Something went wrong with transfer"
             );*/
-            assert.isTrue(await globalContract.isBrokerPayed());
+            assert.isTrue(await globalContract.isBrokerPaid());
 
         } catch (error) {
             assert.isOk(false, error.message);
@@ -253,14 +253,14 @@ contract('SmartProtectionPolicy', function(accounts) {
     // 13
     it('it should call Fnol multiple times until policyBalanceValue has zero value.', async () => {
         try {
-            let expectedValue = 0
+            let expectedValue = 0;
 
-            await globalContract.FNOL(1, 150)
-            await globalContract.FNOL(1, 150)
+            await globalContract.FNOL(1, 150);
+            await globalContract.FNOL(1, 150);
 
-            let policyBalance = await globalContract.getPolicyBalance.call()
+            let policyBalance = await globalContract.getPolicyBalance.call();
 
-            assert.equal(policyBalance, expectedValue, 'Its not possible to have a claim value higher than policyBalanceValue')
+            assert.equal(policyBalance, expectedValue, 'Its not possible to have a claim value higher than policyBalanceValue');
     
         } catch (error) {
             assert.isOk(false)
@@ -273,20 +273,20 @@ contract('SmartProtectionPolicy', function(accounts) {
             let _internalId = 1
             let _idReceived = true
             let _videoReceived = true
-            let _deductablePayed = true
+            let _deductablePaid = true
             let _imeiBlock = true
             let _policeNoticeReport = true
             
             await globalContract.FNOL(1, 150)
             await globalContract.setClaimDocumentationWorkFlow(
-                _internalId, _idReceived, _videoReceived, _deductablePayed, _imeiBlock, _policeNoticeReport)
+                _internalId, _idReceived, _videoReceived, _deductablePaid, _imeiBlock, _policeNoticeReport)
         
             let claimsInfo = await globalContract.getClaims(1)
         
             assert.equal(claimsInfo[0], _internalId, 'Its not possible request a specific internalId and get a different internalId by response.')
             assert.equal(claimsInfo[1], true, 'The _idReceived its not set as received.')
             assert.equal(claimsInfo[2], true, 'The _videoReceived its not set as received.')
-            assert.equal(claimsInfo[3], true, 'The _deductablePayed its not set as received.')
+            assert.equal(claimsInfo[3], true, 'The _deductablePaid its not set as received.')
             assert.equal(claimsInfo[4], true, 'The _imeiBlock its not set as received.')
             assert.equal(claimsInfo[5], true, 'The _policeNoticeReport its not set as received.')
         
@@ -316,7 +316,7 @@ contract('SmartProtectionPolicy', function(accounts) {
                 assert.equal(claimsInfo[0].toNumber(), i, 'Its not possible request a specific internalId and get a different internalId by response.')
                 assert.equal(claimsInfo[1], paramsArray[i][1], 'The _idReceived its not set as received.')
                 assert.equal(claimsInfo[2], paramsArray[i][2], 'The _videoReceived its not set as received.')
-                assert.equal(claimsInfo[3], paramsArray[i][3], 'The _deductablePayed its not set as received.')
+                assert.equal(claimsInfo[3], paramsArray[i][3], 'The _deductablePaid its not set as received.')
                 assert.equal(claimsInfo[4], paramsArray[i][4], 'The _imeiBlock its not set as received.')
                 assert.equal(claimsInfo[5], paramsArray[i][5], 'The _policeNoticeReport its not set as received.')  
             }
