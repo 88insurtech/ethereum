@@ -25,7 +25,7 @@ contract SmartProtectionPolicy {
     struct Policy {
         /** Contains the policy start date and time **/
         uint256 startPolicyTime;        
-        uint256 policyNumber;
+        string policyNumber;
         uint256 valueOfProperty;
         string insuredItem;
         string customerName;
@@ -118,7 +118,7 @@ contract SmartProtectionPolicy {
     constructor (
         address _customeraddress, 
         string _customerName, 
-        uint256 _policynumber, 
+        string _policynumber, 
         uint256 _valueOfProperty, 
         uint256 _premium, 
         uint256 _franchise, 
@@ -130,10 +130,12 @@ contract SmartProtectionPolicy {
 
         owner = msg.sender;
 
-        require(_policynumber != 0x0);
         require(_valueOfProperty != 0x0);
         require(_premium != 0x0);
         require(_franchise != 0x0);
+
+        bytes memory tempPolicyNumber = bytes(_policynumber);
+        require(tempPolicyNumber.length > 0);
         
         bytes memory tempEmptyStringTest = bytes(_insuredItem); // Uses memory
         if (tempEmptyStringTest.length == 0) {
