@@ -1,6 +1,4 @@
 module.exports = {
-    // See <http://truffleframework.com/docs/advanced/configuration>
-    // to customize your Truffle configuration!
     networks: {
         development: {
             host: "127.0.0.1",
@@ -11,6 +9,8 @@ module.exports = {
         rsk: {
             host: "m.rsk.alebanzas.com.ar",
             port: 4444,
+            gas : 2500000,
+            gasPrice : 1,
             network_id: "*",
             from: "0xCf0F482F2C1eF1f221f09e3Cf14122fcE0424F94"
         }
