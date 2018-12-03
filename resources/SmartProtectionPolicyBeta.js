@@ -17,6 +17,7 @@ const contratoRSK = contract(artifacts);
 
 module.exports = function(callback) {
 
+    console.log(web);
 
     contratoRSK.setProvider(web3.currentProvider);
     
