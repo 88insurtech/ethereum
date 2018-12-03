@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /** v0.1.0
  * Author(s): Alex Braz, Alex Silva & Daniel Miranda
 
- * Contract in Alpha. 
+ * Contract in Beta for RSK Network. 
 
  * # 88 Insurance Contract #
  * SmartProtectionPolicy
