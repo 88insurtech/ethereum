@@ -1,18 +1,31 @@
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const memonic = "...";
+
 module.exports = {
     networks: {
         development: {
             host: "127.0.0.1",
-            //from: "0x00E9ecF2C0e35Ba6392e29D0C82fFBe33B3B1C6C",
-            port: 9545,
+            from: "0xCf0F482F2C1eF1f221f09e3Cf14122fcE0424F94",
+            port: 4444,
             network_id: "*" // Match any network id
         },
         rsk: {
-            host: "m.rsk.alebanzas.com.ar",
+            host: "localhost",
             port: 4444,
-            gas : 2500000,
-            gasPrice : 1,
+            gas : 60000000,
+            gasPrice : 2,
             network_id: "*",
             from: "0xCf0F482F2C1eF1f221f09e3Cf14122fcE0424F94"
-        }
+        },
+	rsklive: {
+		provider: function() {
+        		return new HDWalletProvider(memonic, "http://localhost:4444")
+      		},
+		gas : 68000000,
+		gasPrice : 1,
+		network_id: "*",
+		//from: "0x5b556607aa00592385c3b2481210bb2703b0be96"
+
+	}
     }
 };
