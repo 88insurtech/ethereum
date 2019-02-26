@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /** v0.1.0
- * Author(s): Alex Braz, Alex Silva & Daniel Miranda
+ * Author(s): Thiago Souza, Alex Braz, Alex Silva & Daniel Miranda
 
  * Contract in Beta for RSK Network. 
 
